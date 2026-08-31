@@ -1,0 +1,3 @@
+# Enterprise Personal Finance Manager
+
+Initializing enterprise fintech architecture...

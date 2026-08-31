@@ -7,7 +7,7 @@ of the preceding record, forming a verifiable blockchain-style audit ledger.
 import hashlib
 import json
 import time
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, asdict
 
 

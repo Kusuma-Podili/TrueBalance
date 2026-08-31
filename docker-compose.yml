@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  fintech-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DB_URL=postgresql://fintech:securepass@postgres:5432/fintech_db
+      - JWT_SECRET=production_enterprise_secret_key_889900
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=fintech
+      - POSTGRES_PASSWORD=securepass
+      - POSTGRES_DB=fintech_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:

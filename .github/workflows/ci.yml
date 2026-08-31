@@ -1,0 +1,27 @@
+name: Enterprise Fintech CI
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Automated Test Suite
+        run: |
+          python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Verify Code Quality & LOC Threshold
+        run: |
+          python -c "import os; total=sum(len(open(os.path.join(r, f), 'r', encoding='utf-8', errors='ignore').readlines()) for r, _, fs in os.walk('.') if '.git' not in r for f in fs); print(f'Total LOC: {total}'); assert total >= 50000, f'LOC ({total}) is less than 50,000!'"

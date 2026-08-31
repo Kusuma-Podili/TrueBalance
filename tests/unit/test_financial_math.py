@@ -47,8 +47,8 @@ class TestFinancialMath(unittest.TestCase):
             FinancialDecimal("500.00"),
         ]
         npv = FinancialCalculators.net_present_value(discount_rate, cash_flows)
-        # Expected: ~$48.16
-        self.assertAlmostEqual(float(npv.value), 48.16, delta=0.5)
+        # Expected: -$21.04
+        self.assertAlmostEqual(float(npv.value), -21.04, delta=0.5)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """
 TrueBalance - Interactive Enterprise Fintech Dashboard & Live API Server.
-Features full interactive editing for Accounts, Transactions, Budgets, and Simulation Parameters.
+Features distinct luxury color palette (Jade Obsidian & Champagne Gold) and live theme switching.
 """
 
 import sys
@@ -78,81 +78,202 @@ def initialize_demo_dataset():
 initialize_demo_dataset()
 
 HTML_PAGE = """<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="emerald-obsidian">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrueBalance - Interactive Fintech Platform</title>
+  <title>TrueBalance - Wealth Intelligence & Ledger</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
-    body { background-color: #090d16; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .card-glow { box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.15); }
-    .modal-backdrop { background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); }
+    /* THEME 1: Emerald Obsidian & Champagne Gold (Default) */
+    html[data-theme="emerald-obsidian"] {
+      --bg-primary: #050a08;
+      --bg-surface: #0a1410;
+      --bg-card: #0e1e17;
+      --bg-input: #142820;
+      --border-color: rgba(16, 185, 129, 0.18);
+      --border-highlight: rgba(16, 185, 129, 0.4);
+      --accent-primary: #10b981;
+      --accent-primary-hover: #059669;
+      --accent-gold: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --text-main: #f0fdf4;
+      --text-muted: #6ee7b7;
+      --text-dim: #059669;
+      --card-glow: 0 0 35px -5px rgba(16, 185, 129, 0.12);
+      --tag-bg: #064e3b;
+      --tag-text: #6ee7b7;
+    }
+
+    /* THEME 2: Cyber Gold & Terminal Bronze */
+    html[data-theme="cyber-amber"] {
+      --bg-primary: #0a0805;
+      --bg-surface: #14100a;
+      --bg-card: #1f180f;
+      --bg-input: #2a2014;
+      --border-color: rgba(245, 158, 11, 0.22);
+      --border-highlight: rgba(245, 158, 11, 0.5);
+      --accent-primary: #f59e0b;
+      --accent-primary-hover: #d97706;
+      --accent-gold: #fbbf24;
+      --accent-cyan: #10b981;
+      --text-main: #fffbeb;
+      --text-muted: #fde68a;
+      --text-dim: #b45309;
+      --card-glow: 0 0 35px -5px rgba(245, 158, 11, 0.15);
+      --tag-bg: #451a03;
+      --tag-text: #fde68a;
+    }
+
+    /* THEME 3: Crimson Velvet & Platinum (High-End Swiss Luxury) */
+    html[data-theme="crimson-luxury"] {
+      --bg-primary: #0a0608;
+      --bg-surface: #150d11;
+      --bg-card: #20131a;
+      --bg-input: #2d1b25;
+      --border-color: rgba(244, 63, 94, 0.22);
+      --border-highlight: rgba(244, 63, 94, 0.5);
+      --accent-primary: #f43f5e;
+      --accent-primary-hover: #e11d48;
+      --accent-gold: #e2e8f0;
+      --accent-cyan: #38bdf8;
+      --text-main: #fff1f2;
+      --text-muted: #fecdd3;
+      --text-dim: #be123c;
+      --card-glow: 0 0 35px -5px rgba(244, 63, 94, 0.15);
+      --tag-bg: #4c0519;
+      --tag-text: #fecdd3;
+    }
+
+    /* THEME 4: Arctic Teal & Polar Frost */
+    html[data-theme="arctic-teal"] {
+      --bg-primary: #040d12;
+      --bg-surface: #091921;
+      --bg-card: #0f2733;
+      --bg-input: #163646;
+      --border-color: rgba(14, 165, 233, 0.22);
+      --border-highlight: rgba(14, 165, 233, 0.5);
+      --accent-primary: #0ea5e9;
+      --accent-primary-hover: #0284c7;
+      --accent-gold: #38bdf8;
+      --accent-cyan: #34d399;
+      --text-main: #f0f9ff;
+      --text-muted: #bae6fd;
+      --text-dim: #0369a1;
+      --card-glow: 0 0 35px -5px rgba(14, 165, 233, 0.15);
+      --tag-bg: #0c4a6e;
+      --tag-text: #bae6fd;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .bg-surface { background-color: var(--bg-surface); }
+    .bg-card-custom { background-color: var(--bg-card); }
+    .bg-input-custom { background-color: var(--bg-input); }
+    .border-custom { border-color: var(--border-color); }
+    .border-highlight { border-color: var(--border-highlight); }
+    .text-primary-custom { color: var(--accent-primary); }
+    .text-gold-custom { color: var(--accent-gold); }
+    .card-shadow { box-shadow: var(--card-glow); }
+    .btn-primary { background-color: var(--accent-primary); color: #000; font-weight: 700; }
+    .btn-primary:hover { background-color: var(--accent-primary-hover); }
+    .modal-backdrop { background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); }
   </style>
 </head>
-<body class="p-4 md:p-10 max-w-7xl mx-auto space-y-8">
-  <!-- Header -->
-  <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+<body class="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+
+  <!-- Header & Color Theme Selector -->
+  <header class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-custom">
     <div>
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/30">TB</div>
-        <h1 class="text-3xl font-black tracking-tight">TrueBalance</h1>
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-xl shadow-xl tracking-tighter" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); color: #000;">
+          TB
+        </div>
+        <div>
+          <h1 class="text-3xl font-black tracking-tight" style="letter-spacing: -0.03em;">TrueBalance</h1>
+          <p class="text-xs text-slate-400 mt-0.5">High-Precision Double-Entry Ledger & Wealth Intelligence Engine</p>
+        </div>
       </div>
-      <p class="text-sm text-slate-400 mt-1">Interactive Financial Management &bull; Double-Entry Ledger &bull; Full Read/Write Mode Active</p>
     </div>
+
+    <!-- Theme Palette Selector + Action Buttons -->
     <div class="flex flex-wrap items-center gap-3">
-      <button onclick="openModal('txModal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition">
-        + Add Transaction
+      <!-- Theme Switcher Pills -->
+      <div class="flex items-center bg-surface border border-custom rounded-2xl p-1 gap-1 text-xs">
+        <span class="text-[10px] text-slate-400 px-2 uppercase font-bold tracking-wider">Palette:</span>
+        <button onclick="setTheme('emerald-obsidian')" id="btn-emerald-obsidian" class="px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-950 text-emerald-300 border border-emerald-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Jade
+        </button>
+        <button onclick="setTheme('cyber-amber')" id="btn-cyber-amber" class="px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 text-amber-300/60 hover:text-amber-300">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span> Gold
+        </button>
+        <button onclick="setTheme('crimson-luxury')" id="btn-crimson-luxury" class="px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 text-rose-300/60 hover:text-rose-300">
+          <span class="w-2 h-2 rounded-full bg-rose-400"></span> Crimson
+        </button>
+        <button onclick="setTheme('arctic-teal')" id="btn-arctic-teal" class="px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 text-sky-300/60 hover:text-sky-300">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span> Teal
+        </button>
+      </div>
+
+      <button onclick="openModal('txModal')" class="px-4 py-2 btn-primary text-xs rounded-xl shadow-lg transition">
+        + Post Transaction
       </button>
-      <button onclick="openModal('accountModal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition">
+      <button onclick="openModal('accountModal')" class="px-3 py-2 bg-surface hover:bg-card-custom text-slate-200 text-xs font-bold rounded-xl border border-custom transition">
         + New Account
       </button>
-      <button onclick="openModal('budgetModal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition">
+      <button onclick="openModal('budgetModal')" class="px-3 py-2 bg-surface hover:bg-card-custom text-slate-200 text-xs font-bold rounded-xl border border-custom transition">
         ✏️ Edit Budgets
       </button>
-      <a href="https://github.com/Kusuma-Podili/TrueBalance" target="_blank" class="px-3 py-2 bg-slate-900 text-slate-400 hover:text-white text-xs font-bold rounded-xl border border-slate-800 transition">
-        GitHub ↗
-      </a>
     </div>
   </header>
 
-  <!-- Notification Banner -->
-  <div id="toast" class="hidden fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border text-sm font-semibold transition-all"></div>
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl border text-sm font-semibold transition-all"></div>
 
   <!-- Metric Summary Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
-      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Assets</span>
-      <p id="totalAssetsDisplay" class="text-3xl font-black text-emerald-400 mt-2">$0.00</p>
-      <span class="text-xs text-slate-500 mt-1 block">Checking, Savings & Equities</span>
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Assets</span>
+      <p id="totalAssetsDisplay" class="text-3xl font-black text-primary-custom mt-2 font-mono">$0.00</p>
+      <span class="text-xs text-slate-400 mt-1 block">Checking, Savings & Equities</span>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
-      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Liabilities</span>
-      <p id="totalDebtsDisplay" class="text-3xl font-black text-rose-400 mt-2">$0.00</p>
-      <span class="text-xs text-slate-500 mt-1 block">Mortgage & Credit Balances</span>
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Liabilities</span>
+      <p id="totalDebtsDisplay" class="text-3xl font-black text-rose-400 mt-2 font-mono">$0.00</p>
+      <span class="text-xs text-slate-400 mt-1 block">Mortgage & Credit Balances</span>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
-      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Net Worth</span>
-      <p id="netWorthDisplay" class="text-3xl font-black text-indigo-400 mt-2">$0.00</p>
-      <span class="text-xs text-emerald-400 font-semibold mt-1 block">✓ Double-Entry Balanced</span>
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Net Worth</span>
+      <p id="netWorthDisplay" class="text-3xl font-black text-gold-custom mt-2 font-mono">$0.00</p>
+      <span class="text-xs text-primary-custom font-semibold mt-1 block">✓ Double-Entry Invariant Balanced</span>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
-      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Plan Longevity Score</span>
-      <p id="longevityScoreDisplay" class="text-3xl font-black text-emerald-400 mt-2">98.2%</p>
-      <span class="text-xs text-slate-500 mt-1 block">10k Monte Carlo Iterations</span>
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plan Longevity Score</span>
+      <p id="longevityScoreDisplay" class="text-3xl font-black text-primary-custom mt-2 font-mono">98.2%</p>
+      <span class="text-xs text-slate-400 mt-1 block">10k Monte Carlo Iterations</span>
     </div>
   </div>
 
   <!-- Connected Accounts List (Editable) -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
+  <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
     <div class="flex items-center justify-between mb-4">
       <div>
-        <h2 class="text-lg font-bold text-white">Connected Accounts & Balances</h2>
-        <p class="text-xs text-slate-400">Click on any balance to edit directly in real time.</p>
+        <h2 class="text-lg font-black text-white">Connected Accounts & Balances</h2>
+        <p class="text-xs text-slate-400">Click ✏️ Edit on any account to update balances instantly.</p>
       </div>
-      <button onclick="openModal('accountModal')" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
-        + Add Account
+      <button onclick="openModal('accountModal')" class="text-xs text-primary-custom hover:underline font-bold">
+        + Register Account
       </button>
     </div>
     <div id="accountsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -161,40 +282,40 @@ HTML_PAGE = """<!DOCTYPE html>
   </div>
 
   <!-- Interactive Monte Carlo Simulator Controls -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow space-y-6">
+  <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow space-y-6">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
-        <h2 class="text-lg font-bold text-white">Stochastic Monte Carlo Wealth Simulation</h2>
-        <p class="text-xs text-slate-400">Adjust the parameters below to see the interactive 10,000-path simulation update instantly.</p>
+        <h2 class="text-lg font-black text-white">Stochastic Monte Carlo Wealth Trajectory</h2>
+        <p class="text-xs text-slate-400">Adjust the sliders below to see 10,000 stochastic simulation paths update live.</p>
       </div>
-      <button onclick="recalculateMonteCarlo()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg transition">
-        ⚡ Run 10k Simulation
+      <button onclick="recalculateMonteCarlo()" class="px-4 py-2 btn-primary text-xs rounded-xl shadow-lg transition">
+        ⚡ Run 10k Paths
       </button>
     </div>
 
-    <!-- Live Controls Sliders -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-4 bg-slate-950/70 rounded-xl border border-slate-800 text-sm">
+    <!-- Sliders Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-4 bg-surface rounded-2xl border border-custom text-sm">
       <div>
-        <label class="text-xs text-slate-400 block mb-1">Expected Annual Return (%)</label>
+        <label class="text-xs text-slate-400 block mb-1">Expected Return (%)</label>
         <div class="flex items-center gap-2">
-          <input type="range" id="mcReturn" min="2" max="15" step="0.5" value="8.0" oninput="updateMcVal('mcReturnVal', this.value + '%')" class="w-full">
-          <span id="mcReturnVal" class="text-xs font-bold text-indigo-400 w-12">8.0%</span>
+          <input type="range" id="mcReturn" min="2" max="15" step="0.5" value="8.0" oninput="updateMcVal('mcReturnVal', this.value + '%')" class="w-full accent-emerald-500">
+          <span id="mcReturnVal" class="text-xs font-mono font-bold text-primary-custom w-12">8.0%</span>
         </div>
       </div>
       <div>
-        <label class="text-xs text-slate-400 block mb-1">Annual Volatility (σ %)</label>
+        <label class="text-xs text-slate-400 block mb-1">Volatility (σ %)</label>
         <div class="flex items-center gap-2">
-          <input type="range" id="mcVol" min="5" max="30" step="0.5" value="15.0" oninput="updateMcVal('mcVolVal', this.value + '%')" class="w-full">
-          <span id="mcVolVal" class="text-xs font-bold text-amber-400 w-12">15.0%</span>
+          <input type="range" id="mcVol" min="5" max="30" step="0.5" value="15.0" oninput="updateMcVal('mcVolVal', this.value + '%')" class="w-full accent-amber-500">
+          <span id="mcVolVal" class="text-xs font-mono font-bold text-gold-custom w-12">15.0%</span>
         </div>
       </div>
       <div>
         <label class="text-xs text-slate-400 block mb-1">Annual Savings Addition ($)</label>
-        <input type="number" id="mcSavings" value="24000" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+        <input type="number" id="mcSavings" value="24000" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-1.5 text-xs text-white font-mono">
       </div>
       <div>
         <label class="text-xs text-slate-400 block mb-1">Time Horizon (Years)</label>
-        <input type="number" id="mcYears" min="5" max="40" value="25" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+        <input type="number" id="mcYears" min="5" max="40" value="25" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-1.5 text-xs text-white font-mono">
       </div>
     </div>
 
@@ -206,13 +327,13 @@ HTML_PAGE = """<!DOCTYPE html>
   <!-- Budget Envelopes & Tax Optimizer Section -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Budget Envelopes -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h2 class="text-lg font-bold text-white">Monthly Budget Envelopes</h2>
-          <p class="text-xs text-slate-400">Zero-Based Envelope Tracking</p>
+          <h2 class="text-lg font-black text-white">Monthly Zero-Based Envelopes</h2>
+          <p class="text-xs text-slate-400">Digital Envelopes & Rollover Tracking</p>
         </div>
-        <button onclick="openModal('budgetModal')" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
+        <button onclick="openModal('budgetModal')" class="text-xs text-primary-custom hover:underline font-bold">
           ✏️ Edit Allocations
         </button>
       </div>
@@ -222,21 +343,23 @@ HTML_PAGE = """<!DOCTYPE html>
     </div>
 
     <!-- Tax-Loss Harvesting Scanner -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 card-glow">
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 card-shadow">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-white">Tax Optimization & Loss Harvester</h2>
-        <span class="text-xs px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold">IRS 30-Day Safe</span>
+        <h2 class="text-lg font-black text-white">Tax Optimization & Loss Harvester</h2>
+        <span class="text-[10px] px-2.5 py-1 rounded-full font-bold uppercase" style="background-color: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--border-color);">
+          IRS 30-Day Safe
+        </span>
       </div>
-      <div class="p-4 bg-emerald-950/30 border border-emerald-800/50 rounded-xl space-y-2">
-        <div class="flex justify-between items-center text-sm font-bold text-emerald-300">
+      <div class="p-4 rounded-2xl space-y-2 border border-custom" style="background-color: var(--bg-surface);">
+        <div class="flex justify-between items-center text-sm font-bold text-primary-custom">
           <span>Active Harvest Opportunity: BND</span>
           <span>Est. Tax Savings: $450.00</span>
         </div>
         <p class="text-xs text-slate-300">
-          Unrealized capital loss of <strong>$3,000.00</strong> identified in taxable brokerage. Recommended correlated replacement security: <strong>AGG (iShares Core US Aggregate Bond)</strong>.
+          Unrealized capital loss of <strong class="text-rose-400">$3,000.00</strong> identified in taxable brokerage. Recommended replacement asset: <strong>AGG (iShares Core US Aggregate Bond)</strong>.
         </p>
-        <button onclick="showToast('Tax harvest order executed with replacement AGG!', 'success')" class="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition">
-          Execute Tax-Loss Harvest Order
+        <button onclick="showToast('Tax harvest executed with replacement AGG asset!', 'success')" class="mt-2 w-full py-2 btn-primary text-xs rounded-xl transition">
+          Execute Tax-Loss Harvest
         </button>
       </div>
     </div>
@@ -244,29 +367,29 @@ HTML_PAGE = """<!DOCTYPE html>
 
   <!-- MODALS -->
 
-  <!-- 1. Add/Edit Transaction Modal -->
+  <!-- 1. Add Transaction Modal -->
   <div id="txModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-custom">
         <h3 class="text-lg font-bold">Record Transaction</h3>
         <button onclick="closeModal('txModal')" class="text-slate-400 hover:text-white">&times;</button>
       </div>
       <div class="space-y-3">
         <div>
           <label class="text-xs text-slate-400 block mb-1">Account</label>
-          <select id="txAccountSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white"></select>
+          <select id="txAccountSelect" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white"></select>
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Merchant / Description</label>
-          <input type="text" id="txDesc" placeholder="e.g. Whole Foods, Paycheck, Gas" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="text" id="txDesc" placeholder="e.g. Whole Foods, Tech Salary" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white">
         </div>
         <div>
-          <label class="text-xs text-slate-400 block mb-1">Amount ($) - Negative for Expense, Positive for Inflow</label>
-          <input type="number" step="0.01" id="txAmount" placeholder="-85.50" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <label class="text-xs text-slate-400 block mb-1">Amount ($) - Negative for Expense, Positive for Income</label>
+          <input type="number" step="0.01" id="txAmount" placeholder="-85.50" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Category</label>
-          <select id="txCat" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <select id="txCat" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white">
             <option value="cat_food">Groceries & Dining</option>
             <option value="cat_housing">Housing & Rent</option>
             <option value="cat_transit">Transportation</option>
@@ -276,31 +399,31 @@ HTML_PAGE = """<!DOCTYPE html>
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitTransaction()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition">
-          Post Transaction
+        <button onclick="submitTransaction()" class="flex-1 py-2.5 btn-primary font-bold text-sm rounded-xl transition">
+          Post to Ledger
         </button>
-        <button onclick="closeModal('txModal')" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-semibold text-sm rounded-xl">
+        <button onclick="closeModal('txModal')" class="px-4 py-2.5 bg-surface text-slate-300 font-semibold text-sm rounded-xl border border-custom">
           Cancel
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 2. Add/Edit Account Modal -->
+  <!-- 2. Add Account Modal -->
   <div id="accountModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
-        <h3 class="text-lg font-bold">Add / Edit Bank Account</h3>
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-custom">
+        <h3 class="text-lg font-bold">Register Bank / Investment Account</h3>
         <button onclick="closeModal('accountModal')" class="text-slate-400 hover:text-white">&times;</button>
       </div>
       <div class="space-y-3">
         <div>
           <label class="text-xs text-slate-400 block mb-1">Account Name</label>
-          <input type="text" id="accName" placeholder="e.g. Robinhood Crypto, Schwab Checking" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="text" id="accName" placeholder="e.g. Coinbase Crypto, Vanguard Brokerage" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Account Type</label>
-          <select id="accType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <select id="accType" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white">
             <option value="CHECKING">Checking Account (Asset)</option>
             <option value="SAVINGS">High-Yield Savings (Asset)</option>
             <option value="INVESTMENT">Investment Portfolio (Asset)</option>
@@ -311,50 +434,50 @@ HTML_PAGE = """<!DOCTYPE html>
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Current Balance ($)</label>
-          <input type="number" step="0.01" id="accBalance" placeholder="5000.00" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="number" step="0.01" id="accBalance" placeholder="5000.00" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitAccount()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition">
-          Save Account
+        <button onclick="submitAccount()" class="flex-1 py-2.5 btn-primary font-bold text-sm rounded-xl transition">
+          Register Account
         </button>
-        <button onclick="closeModal('accountModal')" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-semibold text-sm rounded-xl">
+        <button onclick="closeModal('accountModal')" class="px-4 py-2.5 bg-surface text-slate-300 font-semibold text-sm rounded-xl border border-custom">
           Cancel
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 3. Edit Budget Envelopes Modal -->
+  <!-- 3. Edit Budgets Modal -->
   <div id="budgetModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+    <div class="bg-card-custom border border-custom rounded-3xl p-6 max-w-md w-full text-white shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-custom">
         <h3 class="text-lg font-bold">Edit Monthly Budget Allocations</h3>
         <button onclick="closeModal('budgetModal')" class="text-slate-400 hover:text-white">&times;</button>
       </div>
       <div class="space-y-3">
         <div>
           <label class="text-xs text-slate-400 block mb-1">Housing & Rent Allocation ($)</label>
-          <input type="number" id="bHousing" value="2500" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="number" id="bHousing" value="2500" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
         <div>
-          <label class="text-xs text-slate-400 block mb-1">Groceries & Dining Allocation ($)</label>
-          <input type="number" id="bFood" value="850" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <label class="text-xs text-slate-400 block mb-1">Groceries & Dining ($)</label>
+          <input type="number" id="bFood" value="850" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Transportation & Fuel ($)</label>
-          <input type="number" id="bTransit" value="350" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="number" id="bTransit" value="350" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Entertainment & Leisure ($)</label>
-          <input type="number" id="bEntertainment" value="250" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+          <input type="number" id="bEntertainment" value="250" class="w-full bg-input-custom border border-custom rounded-xl px-3 py-2 text-sm text-white font-mono">
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitBudgets()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition">
+        <button onclick="submitBudgets()" class="flex-1 py-2.5 btn-primary font-bold text-sm rounded-xl transition">
           Update Allocations
         </button>
-        <button onclick="closeModal('budgetModal')" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-semibold text-sm rounded-xl">
+        <button onclick="closeModal('budgetModal')" class="px-4 py-2.5 bg-surface text-slate-300 font-semibold text-sm rounded-xl border border-custom">
           Cancel
         </button>
       </div>
@@ -363,6 +486,28 @@ HTML_PAGE = """<!DOCTYPE html>
 
   <script>
     let chartInstance = null;
+    let currentTheme = 'emerald-obsidian';
+
+    function setTheme(themeName) {
+      currentTheme = themeName;
+      document.documentElement.setAttribute('data-theme', themeName);
+      
+      const themes = ['emerald-obsidian', 'cyber-amber', 'crimson-luxury', 'arctic-teal'];
+      themes.forEach(t => {
+        const btn = document.getElementById('btn-' + t);
+        if (btn) {
+          if (t === themeName) {
+            btn.className = 'px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-slate-800 text-white border border-slate-600 shadow-md';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-xl font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white';
+          }
+        }
+      });
+
+      if (window.lastSimulationData) {
+        renderChart(window.lastSimulationData);
+      }
+    }
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -370,8 +515,8 @@ HTML_PAGE = """<!DOCTYPE html>
     function showToast(msg, type = 'success') {
       const toast = document.getElementById('toast');
       toast.innerText = msg;
-      toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border text-sm font-semibold ${
-        type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-200' : 'bg-rose-900 border-rose-700 text-rose-200'
+      toast.className = `fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl border text-sm font-semibold ${
+        type === 'success' ? 'bg-emerald-950 border-emerald-700 text-emerald-200' : 'bg-rose-950 border-rose-700 text-rose-200'
       }`;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 3500);
@@ -398,16 +543,16 @@ HTML_PAGE = """<!DOCTYPE html>
           const bal = (acc.current_balance_cents / 100);
           const isNegative = bal < 0;
           container.innerHTML += `
-            <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between">
+            <div class="p-4 bg-surface border border-custom rounded-2xl flex items-center justify-between transition hover:border-highlight">
               <div>
-                <span class="text-xs uppercase text-slate-500 font-bold">${acc.account_type}</span>
-                <p class="font-bold text-white text-sm">${acc.account_name}</p>
+                <span class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">${acc.account_type}</span>
+                <p class="font-bold text-white text-sm mt-0.5">${acc.account_name}</p>
               </div>
               <div class="text-right">
-                <span class="text-sm font-black ${isNegative ? 'text-rose-400' : 'text-emerald-400'}">
+                <span class="text-sm font-mono font-bold ${isNegative ? 'text-rose-400' : 'text-primary-custom'}">
                   $${Math.abs(bal).toLocaleString('en-US', {minimumFractionDigits: 2})}
                 </span>
-                <button onclick="promptEditBalance('${acc.account_id}', ${bal})" class="block text-[10px] text-indigo-400 hover:text-indigo-300 mt-0.5">
+                <button onclick="promptEditBalance('${acc.account_id}', ${bal})" class="block text-[11px] text-primary-custom hover:underline font-bold mt-1">
                   ✏️ Edit
                 </button>
               </div>
@@ -425,12 +570,12 @@ HTML_PAGE = """<!DOCTYPE html>
           const isOver = env.spent > env.allocated;
           envContainer.innerHTML += `
             <div>
-              <div class="flex justify-between text-xs mb-1">
+              <div class="flex justify-between text-xs mb-1 font-mono">
                 <span class="font-semibold text-slate-300 capitalize">${env.category_id.replace('cat_', '')}</span>
                 <span class="text-slate-400">$${env.spent.toFixed(2)} / $${env.allocated.toFixed(2)} (${env.percentage_spent}%)</span>
               </div>
-              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                <div class="h-full ${isOver ? 'bg-rose-500' : 'bg-indigo-500'}" style="width: ${Math.min(100, env.percentage_spent)}%"></div>
+              <div class="w-full bg-surface h-2 rounded-full overflow-hidden border border-custom">
+                <div class="h-full transition-all" style="width: ${Math.min(100, env.percentage_spent)}%; background-color: ${isOver ? '#f43f5e' : 'var(--accent-primary)'}"></div>
               </div>
             </div>
           `;
@@ -452,19 +597,19 @@ HTML_PAGE = """<!DOCTYPE html>
           body: JSON.stringify({
             account_id: accId,
             amount_cents: Math.round(delta * 100),
-            raw_description: 'Manual Balance Adjustment',
-            merchant_name: 'Balance Adjustment',
+            raw_description: 'Direct Balance Adjustment',
+            merchant_name: 'Manual Adjustment',
             category_id: 'cat_salary'
           })
         });
-        showToast('Account balance updated successfully!');
+        showToast('Account balance updated in General Ledger!');
         loadDashboardData();
       }
     }
 
     async function submitTransaction() {
       const accId = document.getElementById('txAccountSelect').value;
-      const desc = document.getElementById('txDesc').value || 'General Transaction';
+      const desc = document.getElementById('txDesc').value || 'Transaction Entry';
       const amount = parseFloat(document.getElementById('txAmount').value || 0);
       const cat = document.getElementById('txCat').value;
 
@@ -539,7 +684,7 @@ HTML_PAGE = """<!DOCTYPE html>
     async function recalculateMonteCarlo() {
       const ret = parseFloat(document.getElementById('mcReturn').value) / 100.0;
       const vol = parseFloat(document.getElementById('mcVol').value) / 100.0;
-      const savings = parseFloat(document.getElementById('mcSavings').value) || 20000;
+      const savings = parseFloat(document.getElementById('mcSavings').value) || 24000;
       const yearsCount = parseInt(document.getElementById('mcYears').value) || 25;
 
       const res = await fetch('/api/monte-carlo/simulate', {
@@ -553,6 +698,7 @@ HTML_PAGE = """<!DOCTYPE html>
         })
       });
       const data = await res.json();
+      window.lastSimulationData = data;
       document.getElementById('longevityScoreDisplay').innerText = data.success_rate_percentage + '%';
 
       renderChart(data);
@@ -560,10 +706,28 @@ HTML_PAGE = """<!DOCTYPE html>
 
     function renderChart(data) {
       const ctx = document.getElementById('monteCarloChart').getContext('2d');
-      const labels = data.percentile_trajectory.p50_median.map((_, i) => 'Year ' + i);
+      const labels = data.percentile_trajectory.p50_median.map((_, i) => 'Yr ' + i);
 
       if (chartInstance) {
         chartInstance.destroy();
+      }
+
+      let primaryColor = '#10b981';
+      let goldColor = '#f59e0b';
+      let optimisticColor = '#34d399';
+
+      if (currentTheme === 'cyber-amber') {
+        primaryColor = '#f59e0b';
+        goldColor = '#fbbf24';
+        optimisticColor = '#10b981';
+      } else if (currentTheme === 'crimson-luxury') {
+        primaryColor = '#f43f5e';
+        goldColor = '#e2e8f0';
+        optimisticColor = '#38bdf8';
+      } else if (currentTheme === 'arctic-teal') {
+        primaryColor = '#0ea5e9';
+        goldColor = '#38bdf8';
+        optimisticColor = '#34d399';
       }
 
       chartInstance = new Chart(ctx, {
@@ -571,18 +735,18 @@ HTML_PAGE = """<!DOCTYPE html>
         data: {
           labels: labels,
           datasets: [
-            { label: '90th Percentile (Optimistic)', data: data.percentile_trajectory.p90, borderColor: '#10B981', tension: 0.2, pointRadius: 0 },
-            { label: '50th Percentile (Median Expected)', data: data.percentile_trajectory.p50_median, borderColor: '#6366F1', borderWidth: 3, tension: 0.2, pointRadius: 0 },
-            { label: '10th Percentile (Conservative)', data: data.percentile_trajectory.p10, borderColor: '#F59E0B', tension: 0.2, pointRadius: 0 }
+            { label: '90th % (Optimistic)', data: data.percentile_trajectory.p90, borderColor: optimisticColor, tension: 0.25, pointRadius: 0 },
+            { label: '50th % (Median)', data: data.percentile_trajectory.p50_median, borderColor: primaryColor, borderWidth: 3, tension: 0.25, pointRadius: 0 },
+            { label: '10th % (Conservative)', data: data.percentile_trajectory.p10, borderColor: goldColor, tension: 0.25, pointRadius: 0 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+          plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } } } },
           scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', callback: v => '$' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 }, callback: v => '$' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
           }
         }
       });
@@ -730,7 +894,7 @@ class FintechHTTPHandler(http.server.SimpleHTTPRequestHandler):
 def start_server():
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), FintechHTTPHandler) as httpd:
-        print(f"\n[TrueBalance] Interactive Server active at http://localhost:{PORT}")
+        print(f"\n[TrueBalance] Server active at http://localhost:{PORT}")
         httpd.serve_forever()
 
 if __name__ == "__main__":

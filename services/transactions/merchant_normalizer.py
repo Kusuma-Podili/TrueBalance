@@ -42,6 +42,7 @@ class MerchantNormalizer:
         "sbux": "Starbucks",
         "starbucks": "Starbucks",
         "trader joe": "Trader Joe's",
+        "blue bottle": "Blue Bottle Coffee",
         "apple": "Apple",
         "google": "Google",
     }

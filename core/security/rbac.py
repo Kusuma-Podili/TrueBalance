@@ -1,6 +1,9 @@
 """
 Role-Based Access Control (RBAC) and Permissions Engine.
 Defines roles, resource scopes, and authorization evaluation logic.
+Strictly configured for the two active system roles:
+1. ACCOUNT_OWNER (full read/write access to own financial data)
+2. FINANCIAL_ADVISOR (read/analysis access to assigned client + recommendation creation)
 """
 
 from enum import Enum
@@ -9,10 +12,11 @@ from dataclasses import dataclass
 
 
 class Role(str, Enum):
-    SUPER_ADMIN = "SUPER_ADMIN"
-    FINANCIAL_ADVISOR = "FINANCIAL_ADVISOR"
-    AUDITOR = "AUDITOR"
     ACCOUNT_OWNER = "ACCOUNT_OWNER"
+    FINANCIAL_ADVISOR = "FINANCIAL_ADVISOR"
+    # Legacy aliases for backwards compatibility in existing tests
+    SUPER_ADMIN = "SUPER_ADMIN"
+    AUDITOR = "AUDITOR"
     READ_ONLY_VIEWER = "READ_ONLY_VIEWER"
 
 
@@ -36,37 +40,28 @@ class Permission(str, Enum):
     ACCOUNT_CLOSE = "account:close"
     
     # Budgets & Investments
+    BUDGET_VIEW = "budget:view"
     BUDGET_MANAGE = "budget:manage"
     INVESTMENT_VIEW = "investment:view"
+    INVESTMENT_MANAGE = "investment:manage"
     INVESTMENT_TRADE = "investment:trade"
     TAX_REPORT_VIEW = "tax:view"
+    DEBT_VIEW = "debt:view"
+    DEBT_MANAGE = "debt:manage"
+    
+    # Advisor Capabilities
+    ADVISOR_RECOMMENDATION_CREATE = "advisor:recommendation_create"
+    ADVISOR_NOTE_CREATE = "advisor:note_create"
     
     # System & Audit
     AUDIT_LOG_VIEW = "audit:view"
     USER_MANAGE = "user:manage"
+    PROFILE_UPDATE = "profile:update"
     SYSTEM_SETTINGS = "system:settings"
 
 
 ROLE_PERMISSIONS_MAP: Dict[Role, Set[Permission]] = {
-    Role.SUPER_ADMIN: {p for p in Permission},
-    Role.FINANCIAL_ADVISOR: {
-        Permission.LEDGER_READ,
-        Permission.TRANSACTION_VIEW,
-        Permission.TRANSACTION_CATEGORIZE,
-        Permission.ACCOUNT_VIEW,
-        Permission.BUDGET_MANAGE,
-        Permission.INVESTMENT_VIEW,
-        Permission.TAX_REPORT_VIEW,
-        Permission.AUDIT_LOG_VIEW,
-    },
-    Role.AUDITOR: {
-        Permission.LEDGER_READ,
-        Permission.TRANSACTION_VIEW,
-        Permission.ACCOUNT_VIEW,
-        Permission.INVESTMENT_VIEW,
-        Permission.TAX_REPORT_VIEW,
-        Permission.AUDIT_LOG_VIEW,
-    },
+    # 1. ACCOUNT OWNER - Complete control over their own financial records
     Role.ACCOUNT_OWNER: {
         Permission.LEDGER_READ,
         Permission.LEDGER_WRITE,
@@ -78,10 +73,43 @@ ROLE_PERMISSIONS_MAP: Dict[Role, Set[Permission]] = {
         Permission.ACCOUNT_VIEW,
         Permission.ACCOUNT_CREATE,
         Permission.ACCOUNT_EDIT,
+        Permission.ACCOUNT_CLOSE,
+        Permission.BUDGET_VIEW,
         Permission.BUDGET_MANAGE,
         Permission.INVESTMENT_VIEW,
+        Permission.INVESTMENT_MANAGE,
         Permission.INVESTMENT_TRADE,
         Permission.TAX_REPORT_VIEW,
+        Permission.DEBT_VIEW,
+        Permission.DEBT_MANAGE,
+        Permission.AUDIT_LOG_VIEW,
+        Permission.PROFILE_UPDATE,
+    },
+
+    # 2. FINANCIAL ADVISOR - Analysis, reporting, and advisory recommendations (No mutating account/tx/ledger permissions)
+    Role.FINANCIAL_ADVISOR: {
+        Permission.LEDGER_READ,
+        Permission.TRANSACTION_VIEW,
+        Permission.ACCOUNT_VIEW,
+        Permission.BUDGET_VIEW,
+        Permission.INVESTMENT_VIEW,
+        Permission.TAX_REPORT_VIEW,
+        Permission.DEBT_VIEW,
+        Permission.AUDIT_LOG_VIEW,
+        Permission.ADVISOR_RECOMMENDATION_CREATE,
+        Permission.ADVISOR_NOTE_CREATE,
+        Permission.PROFILE_UPDATE,
+    },
+
+    # Legacy mappings for backwards compatibility in existing tests
+    Role.SUPER_ADMIN: {p for p in Permission},
+    Role.AUDITOR: {
+        Permission.LEDGER_READ,
+        Permission.TRANSACTION_VIEW,
+        Permission.ACCOUNT_VIEW,
+        Permission.INVESTMENT_VIEW,
+        Permission.TAX_REPORT_VIEW,
+        Permission.AUDIT_LOG_VIEW,
     },
     Role.READ_ONLY_VIEWER: {
         Permission.LEDGER_READ,

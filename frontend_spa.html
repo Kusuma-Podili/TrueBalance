@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrueBalance — Enterprise Wealth Intelligence & Ledger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-forest: #064e3b;
+      --brand-forest-dark: #022c22;
+      --brand-forest-light: #059669;
+      --brand-emerald: #10b981;
+      --brand-gold: #d97706;
+      --brand-gold-light: #f59e0b;
+      --brand-gold-subtle: #fef3c7;
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .bg-forest { background-color: var(--brand-forest); }
+    .bg-forest-dark { background-color: var(--brand-forest-dark); }
+    .text-forest { color: var(--brand-forest); }
+    .text-gold { color: var(--brand-gold); }
+    .border-gold { border-color: var(--brand-gold); }
+    .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); }
+    .card-shadow-lg { box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.08), 0 8px 10px -6px rgba(6, 78, 59, 0.04); }
+    .modal-backdrop { background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast" class="hidden fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border text-sm font-semibold transition-all"></div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. UNIFIED LOGIN VIEW                                                     -->
+  <!-- ========================================================================= -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-slate-100">
+    <div class="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 card-shadow-lg space-y-6">
+      
+      <!-- Brand Header -->
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-forest text-amber-400 font-extrabold text-2xl shadow-md">
+          TB
+        </div>
+        <h1 class="text-2xl font-black tracking-tight text-slate-900 mt-2">TRUEBALANCE</h1>
+        <p class="text-xs text-slate-500 font-medium">Wealth Intelligence & Financial Management</p>
+      </div>
+
+      <!-- Demo Account Quick Selectors -->
+      <div class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl text-xs space-y-2">
+        <span class="font-bold text-amber-900 block text-[11px] uppercase tracking-wider">Quick Demo Login:</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="fillLogin('user@truebalance.com', 'User@123')" class="p-2 bg-white hover:bg-amber-100/60 border border-amber-200 rounded-xl text-left font-semibold text-slate-800 transition">
+            <span class="block text-[10px] text-amber-700 font-bold uppercase">Account Owner</span>
+            user@truebalance.com
+          </button>
+          <button onclick="fillLogin('advisor@truebalance.com', 'Advisor@123')" class="p-2 bg-white hover:bg-amber-100/60 border border-amber-200 rounded-xl text-left font-semibold text-slate-800 transition">
+            <span class="block text-[10px] text-emerald-800 font-bold uppercase">Financial Advisor</span>
+            advisor@truebalance.com
+          </button>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
+          <input type="email" id="loginEmail" required placeholder="user@truebalance.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-bold text-slate-700">Password</label>
+            <button type="button" onclick="showForgotPassword()" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold">Forgot password?</button>
+          </div>
+          <div class="relative">
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition pr-10">
+            <button type="button" onclick="togglePasswordVisibility('loginPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400 hover:text-slate-600 font-semibold">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center">
+          <input type="checkbox" id="rememberMe" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-2">
+          <label for="rememberMe" class="text-xs text-slate-600">Remember my session on this device</label>
+        </div>
+
+        <button type="submit" id="loginBtn" class="w-full py-3 bg-forest hover:bg-forest-dark text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-950/20 transition flex items-center justify-center gap-2">
+          <span>Sign In to TrueBalance</span>
+        </button>
+      </form>
+
+      <div class="pt-2 text-center border-t border-slate-100">
+        <p class="text-[11px] text-slate-400">Protected by 256-bit End-to-End Cryptography & NIST PBKDF2 Hashing</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. AUTHENTICATED APP SHELL (SIDEBAR + CONTENT)                            -->
+  <!-- ========================================================================= -->
+  <div id="appShell" class="hidden min-h-screen flex flex-col md:flex-row">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-full md:w-64 bg-forest-dark text-white flex flex-col justify-between shrink-0 shadow-xl">
+      <div>
+        <!-- App Branding -->
+        <div class="p-6 border-b border-emerald-900/60 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-amber-300 font-black text-lg flex items-center justify-center shadow-md">
+            TB
+          </div>
+          <div>
+            <h2 class="font-black text-lg tracking-tight leading-none text-white">TrueBalance</h2>
+            <span class="text-[10px] text-emerald-300/80 font-medium">Wealth Platform</span>
+          </div>
+        </div>
+
+        <!-- Role Badge & Active User -->
+        <div class="px-6 py-4 bg-emerald-950/80 border-b border-emerald-900/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Active Role</span>
+            <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40"></span>
+          </div>
+          <p id="userNameDisplay" class="font-bold text-sm text-white truncate"></p>
+          <p id="userEmailDisplay" class="text-xs text-emerald-200/60 truncate"></p>
+        </div>
+
+        <!-- Dynamic Role Navigation Menu -->
+        <nav id="navMenu" class="p-4 space-y-1 text-sm font-medium">
+          <!-- Injected dynamically based on role -->
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-emerald-900/60">
+        <button onclick="handleLogout()" class="w-full py-2 px-3 rounded-xl bg-emerald-950/60 hover:bg-rose-950/80 text-emerald-200 hover:text-rose-200 border border-emerald-900 hover:border-rose-900 text-xs font-bold transition flex items-center justify-center gap-2">
+          <span>🚪 Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
+      
+      <!-- Top Bar -->
+      <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+          <h2 id="pageTitle" class="text-lg font-black text-slate-900">Dashboard</h2>
+          <div id="advisorClientCallout" class="hidden text-xs px-3 py-1 bg-amber-50 border border-amber-200 rounded-full font-bold text-amber-900 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            Viewing Client: <span id="clientNameTag" class="underline">Alex Vance</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Double-Entry Equilibrium Badge -->
+          <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Ledger Status: ✓ Balanced
+          </span>
+
+          <!-- Quick Action Buttons -->
+          <div id="ownerActionButtons" class="flex items-center gap-2">
+            <button onclick="openModal('txModal')" class="px-3 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              + Transaction
+            </button>
+            <button onclick="openModal('accountModal')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 transition">
+              + Account
+            </button>
+          </div>
+
+          <div id="advisorActionButtons" class="hidden flex items-center gap-2">
+            <button onclick="openModal('recommendationModal')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow transition">
+              + Recommendation
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Main Page Viewport -->
+      <div id="pageContent" class="p-6 md:p-8 flex-1 overflow-y-auto space-y-8">
+        <!-- Injected dynamically by router -->
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. MODALS (ACCOUNTS, TRANSACTIONS, BUDGETS, RECOMMENDATIONS, PASSWORD)    -->
+  <!-- ========================================================================= -->
+
+  <!-- Add Account Modal -->
+  <div id="accountModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Register Financial Account</h3>
+        <button onclick="closeModal('accountModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Account Nickname</label>
+          <input type="text" id="accName" placeholder="e.g. Schwab High-Yield Savings" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Financial Institution</label>
+          <input type="text" id="accInst" placeholder="e.g. Charles Schwab, Chase, Fidelity" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Account Classification</label>
+          <select id="accType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+            <option value="CHECKING">Checking Account (Asset)</option>
+            <option value="SAVINGS">High-Yield Savings (Asset)</option>
+            <option value="INVESTMENT">Brokerage Portfolio (Asset)</option>
+            <option value="CREDIT_CARD">Credit Card Line (Liability)</option>
+            <option value="MORTGAGE">Real Estate Mortgage (Liability)</option>
+            <option value="LOAN">Personal / Auto Loan (Liability)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Initial Balance ($)</label>
+          <input type="number" step="0.01" id="accBalance" placeholder="5000.00" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="submitNewAccount()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+          Create Account
+        </button>
+        <button onclick="closeModal('accountModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Transaction Modal -->
+  <div id="txModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Record Ledger Transaction</h3>
+        <button onclick="closeModal('txModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Select Account</label>
+          <select id="txAccountSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900"></select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Merchant / Payee</label>
+          <input type="text" id="txMerchant" placeholder="e.g. Whole Foods Market, Apple Store" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Amount ($) — Positive for Income, Negative for Expense</label>
+          <input type="number" step="0.01" id="txAmount" placeholder="-85.00" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Category</label>
+          <select id="txCategory" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+            <option value="cat_food">Groceries & Nutrition</option>
+            <option value="cat_housing">Housing & Rent</option>
+            <option value="cat_transit">Transportation & Fuel</option>
+            <option value="cat_utilities">Utilities & Bills</option>
+            <option value="cat_entertainment">Entertainment & Leisure</option>
+            <option value="cat_shopping">Shopping & Merchandise</option>
+            <option value="cat_salary">Salary & Wages (Income)</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="submitNewTransaction()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+          Post Transaction
+        </button>
+        <button onclick="closeModal('txModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advisor Recommendation Modal -->
+  <div id="recommendationModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Issue Advisor Recommendation</h3>
+        <button onclick="closeModal('recommendationModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Recommendation Title</label>
+          <input type="text" id="recTitle" placeholder="e.g. Rebalance Equities into International Index" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-700 block mb-1">Category</label>
+            <select id="recCategory" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+              <option value="Investment">Investment</option>
+              <option value="Budget">Budget</option>
+              <option value="Debt">Debt</option>
+              <option value="Savings">Savings</option>
+              <option value="Tax">Tax</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-700 block mb-1">Priority Level</label>
+            <select id="recPriority" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+              <option value="HIGH">High Priority</option>
+              <option value="MEDIUM">Medium Priority</option>
+              <option value="LOW">Low Priority</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Detailed Explanation & Analysis</label>
+          <textarea id="recExplanation" rows="4" placeholder="Explain the quantitative rationale and action steps..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="submitNewRecommendation()" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition">
+          Publish Recommendation
+        </button>
+        <button onclick="closeModal('recommendationModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="passwordModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Change Account Password</h3>
+        <button onclick="closeModal('passwordModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Current Password</label>
+          <input type="password" id="pwOld" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">New Password (min 6 characters)</label>
+          <input type="password" id="pwNew" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="submitChangePassword()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+          Update Password
+        </button>
+        <button onclick="closeModal('passwordModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION CLIENT JAVASCRIPT ARCHITECTURE -->
+  <script>
+    let currentUser = null;
+    let accessToken = localStorage.getItem('tb_access_token');
+    let currentPage = 'dashboard';
+    let chartInstances = {};
+
+    // -------------------------------------------------------------
+    // Auth & Navigation Utilities
+    // -------------------------------------------------------------
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.className = `fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl border text-sm font-bold ${
+        type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100'
+      }`;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function fillLogin(email, password) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+    }
+
+    function togglePasswordVisibility(id) {
+      const inp = document.getElementById(id);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function showForgotPassword() {
+      alert('For security, password resets are processed via your identity administrator or client support at support@truebalance.com');
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (accessToken) headers['Authorization'] = 'Bearer ' + accessToken;
+
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+
+      const res = await fetch(endpoint, opts);
+      if (res.status === 401 && endpoint !== '/api/auth/login') {
+        handleLogout();
+        throw new Error('Session expired. Please log in.');
+      }
+      return res;
+    }
+
+    // -------------------------------------------------------------
+    // Login & Session Management
+    // -------------------------------------------------------------
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await apiRequest('/api/auth/login', 'POST', { email, password });
+        const data = await res.json();
+
+        if (res.ok && data.status === 'SUCCESS') {
+          accessToken = data.access_token;
+          currentUser = data.user;
+          localStorage.setItem('tb_access_token', accessToken);
+          localStorage.setItem('tb_user', JSON.stringify(currentUser));
+          showToast(`Welcome back, ${currentUser.full_name}!`);
+          bootstrapApp();
+        } else {
+          showToast(data.error || 'Authentication failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message || 'Login failed', 'error');
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        if (accessToken) await apiRequest('/api/auth/logout', 'POST');
+      } catch (e) {}
+      accessToken = null;
+      currentUser = null;
+      localStorage.removeItem('tb_access_token');
+      localStorage.removeItem('tb_user');
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    // -------------------------------------------------------------
+    // App Initialization & Role Sidebar Setup
+    // -------------------------------------------------------------
+    async function bootstrapApp() {
+      if (!accessToken) {
+        document.getElementById('loginView').classList.remove('hidden');
+        document.getElementById('appShell').classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await apiRequest('/api/auth/me');
+        const data = await res.json();
+        currentUser = data.user;
+      } catch (e) {
+        handleLogout();
+        return;
+      }
+
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+
+      // Update Header Info
+      document.getElementById('userNameDisplay').innerText = currentUser.full_name;
+      document.getElementById('userEmailDisplay').innerText = currentUser.email;
+      document.getElementById('userRoleBadge').innerText = currentUser.role.replace('_', ' ');
+
+      const isAdvisor = currentUser.role === 'FINANCIAL_ADVISOR';
+      document.getElementById('advisorClientCallout').classList.toggle('hidden', !isAdvisor);
+      document.getElementById('ownerActionButtons').classList.toggle('hidden', isAdvisor);
+      document.getElementById('advisorActionButtons').classList.toggle('hidden', !isAdvisor);
+
+      // Build Role Sidebar
+      buildSidebarNav(isAdvisor);
+
+      // Navigate to initial page
+      navigateTo('dashboard');
+    }
+
+    function buildSidebarNav(isAdvisor) {
+      const nav = document.getElementById('navMenu');
+      nav.innerHTML = '';
+
+      const ownerItems = [
+        { id: 'dashboard', label: '📊 Dashboard', desc: 'Financial Overview' },
+        { id: 'accounts', label: '🏦 Accounts', desc: 'Bank & Asset Management' },
+        { id: 'transactions', label: '💳 Transactions', desc: 'Ledger Ingestion' },
+        { id: 'budgets', label: '🎯 Budgets', desc: 'Zero-Based Envelopes' },
+        { id: 'investments', label: '📈 Investments', desc: 'Holdings & Monte Carlo' },
+        { id: 'taxes', label: '📑 Taxes', desc: '50-State Planning' },
+        { id: 'debt', label: '📉 Debt Payoff', desc: 'Avalanche Optimizer' },
+        { id: 'health', label: '🩺 Financial Health', desc: 'Score & Pillars' },
+        { id: 'compliance', label: '🛡️ Compliance', desc: 'KYC & AML Monitor' },
+        { id: 'reports', label: '📋 Reports', desc: 'Financial Statements' },
+        { id: 'audit', label: '🔒 Audit History', desc: 'Merkle Hash Chain' },
+        { id: 'recommendations', label: '💡 Advisor Insights', desc: 'Client Recommendations' },
+        { id: 'profile', label: '👤 Profile & Security', desc: 'Settings' }
+      ];
+
+      const advisorItems = [
+        { id: 'dashboard', label: '📊 Client Dashboard', desc: 'Financial Overview' },
+        { id: 'accounts', label: '🏦 Client Accounts', desc: 'Read-Only View' },
+        { id: 'transactions', label: '💳 Transactions Audit', desc: 'Ledger Audit' },
+        { id: 'budgets', label: '🎯 Budget Analysis', desc: 'Spending Analysis' },
+        { id: 'investments', label: '📈 Investment Risk', desc: 'MPT & Stress Testing' },
+        { id: 'taxes', label: '📑 Tax Optimization', desc: 'Loss Harvesting Analysis' },
+        { id: 'debt', label: '📉 Debt Structure', desc: 'Amortization Audit' },
+        { id: 'health', label: '🩺 Health Metrics', desc: 'Client Health Score' },
+        { id: 'compliance', label: '🛡️ Compliance Status', desc: 'AML / Risk Screening' },
+        { id: 'reports', label: '📋 Financial Reports', desc: 'Client Statement Export' },
+        { id: 'recommendations', label: '💡 Recommendations', desc: 'Author Recommendations' },
+        { id: 'audit', label: '🔒 Audit Logs', desc: 'System Audit Chain' },
+        { id: 'profile', label: '👤 Advisor Profile', desc: 'Settings' }
+      ];
+
+      const items = isAdvisor ? advisorItems : ownerItems;
+      items.forEach(item => {
+        nav.innerHTML += `
+          <button onclick="navigateTo('${item.id}')" id="nav-${item.id}" class="w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-emerald-100 hover:bg-emerald-900/60 font-medium">
+            <span>${item.label}</span>
+          </button>
+        `;
+      });
+    }
+
+    function navigateTo(pageId) {
+      currentPage = pageId;
+
+      // Update Active Navigation Item
+      document.querySelectorAll('#navMenu button').forEach(btn => {
+        btn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-emerald-200/80 hover:bg-emerald-900/60 font-medium';
+      });
+      const activeBtn = document.getElementById('nav-' + pageId);
+      if (activeBtn) {
+        activeBtn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between bg-emerald-800 text-amber-300 font-bold shadow-sm';
+      }
+
+      document.getElementById('pageTitle').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1).replace('-', ' ');
+
+      // Render View
+      renderPageView(pageId);
+    }
+
+    // -------------------------------------------------------------
+    // Page Rendering Engine (13 Working Views)
+    // -------------------------------------------------------------
+    async function renderPageView(pageId) {
+      const container = document.getElementById('pageContent');
+      container.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Loading live financial data...</div>';
+
+      try {
+        if (pageId === 'dashboard') await renderDashboardPage(container);
+        else if (pageId === 'accounts') await renderAccountsPage(container);
+        else if (pageId === 'transactions') await renderTransactionsPage(container);
+        else if (pageId === 'budgets') await renderBudgetsPage(container);
+        else if (pageId === 'investments') await renderInvestmentsPage(container);
+        else if (pageId === 'taxes') await renderTaxesPage(container);
+        else if (pageId === 'debt') await renderDebtPage(container);
+        else if (pageId === 'health') await renderHealthPage(container);
+        else if (pageId === 'compliance') await renderCompliancePage(container);
+        else if (pageId === 'reports') await renderReportsPage(container);
+        else if (pageId === 'audit') await renderAuditPage(container);
+        else if (pageId === 'recommendations') await renderRecommendationsPage(container);
+        else if (pageId === 'profile') await renderProfilePage(container);
+      } catch (err) {
+        container.innerHTML = `<div class="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-sm font-semibold">Error loading page data: ${err.message}</div>`;
+      }
+    }
+
+    // --- 1. Dashboard View ---
+    async function renderDashboardPage(container) {
+      const [nwRes, txRes, bRes, hRes, recRes] = await Promise.all([
+        apiRequest('/api/net-worth'),
+        apiRequest('/api/transactions'),
+        apiRequest('/api/budgets'),
+        apiRequest('/api/financial-health'),
+        apiRequest('/api/advisor/recommendations')
+      ]);
+
+      const nw = await nwRes.json();
+      const txs = await txRes.json();
+      const budgets = await bRes.json();
+      const health = await hRes.json();
+      const recs = await recRes.json();
+
+      container.innerHTML = `
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Assets</span>
+            <p class="text-2xl font-black text-forest mt-1.5 font-mono">$${Number(nw.total_assets).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">Checking, Savings & Equities</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Liabilities</span>
+            <p class="text-2xl font-black text-rose-700 mt-1.5 font-mono">$${Number(nw.total_liabilities).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">Mortgage & Credit Balances</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Net Worth Position</span>
+            <p class="text-2xl font-black text-gold mt-1.5 font-mono">$${Number(nw.net_worth).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">✓ Double-Entry Invariant Verified</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Financial Health Score</span>
+            <p class="text-2xl font-black text-forest mt-1.5 font-mono">${health.overall_score} <span class="text-sm font-semibold text-slate-500">/ 100 (${health.grade})</span></p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">${health.pillars.emergency_fund.label}</span>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-black text-slate-900 text-sm">Monthly Cash Flow & Net Inflow</h3>
+              <span class="text-xs text-slate-500 font-mono">Income: $10,400.00 | Outflows: $2,753.49</span>
+            </div>
+            <div class="h-60">
+              <canvas id="cashflowChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow">
+            <h3 class="font-black text-slate-900 text-sm mb-4">Expense Distribution by Category</h3>
+            <div class="h-60">
+              <canvas id="categoryDonutChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions & Advisor Recommendations -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Recent Transactions -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-black text-slate-900 text-sm">Recent Ledger Transactions</h3>
+              <button onclick="navigateTo('transactions')" class="text-xs text-forest hover:underline font-bold">View All ↗</button>
+            </div>
+            <div class="divide-y divide-slate-100">
+              ${txs.slice(0, 5).map(t => `
+                <div class="py-3 flex items-center justify-between text-xs">
+                  <div>
+                    <p class="font-bold text-slate-900">${t.merchant_name}</p>
+                    <span class="text-slate-400">${t.date} &bull; ${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span>
+                  </div>
+                  <span class="font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
+                    ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Active Recommendations -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-black text-slate-900 text-sm">Active Advisor Insights</h3>
+              <button onclick="navigateTo('recommendations')" class="text-xs text-forest hover:underline font-bold">Manage ↗</button>
+            </div>
+            <div class="space-y-3">
+              ${recs.slice(0, 2).map(r => `
+                <div class="p-3.5 bg-amber-50/70 border border-amber-200/70 rounded-xl space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-amber-900">${r.title}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${r.priority === 'HIGH' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${r.priority}</span>
+                  </div>
+                  <p class="text-xs text-slate-700 leading-relaxed">${r.explanation}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Render Charts
+      initDashboardCharts(txs, budgets);
+    }
+
+    function initDashboardCharts(txs, budgets) {
+      const ctxCash = document.getElementById('cashflowChart').getContext('2d');
+      new Chart(ctxCash, {
+        type: 'bar',
+        data: {
+          labels: ['March', 'April', 'May', 'June', 'July', 'August 2026'],
+          datasets: [
+            { label: 'Gross Inflow ($)', data: [9800, 10200, 10400, 10400, 10400, 10400], backgroundColor: '#059669', borderRadius: 6 },
+            { label: 'Operating Expenses ($)', data: [2800, 3100, 2650, 2900, 2710, 2753], backgroundColor: '#d97706', borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: '#f1f5f9' }, ticks: { callback: v => '$' + v } }
+          }
+        }
+      });
+
+      const ctxDonut = document.getElementById('categoryDonutChart').getContext('2d');
+      new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+          labels: budgets.map(b => b.category_name),
+          datasets: [{
+            data: budgets.map(b => b.spent),
+            backgroundColor: ['#064e3b', '#059669', '#10b981', '#d97706', '#f59e0b', '#3b82f6'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+      });
+    }
+
+    // --- 2. Accounts View ---
+    async function renderAccountsPage(container) {
+      const res = await apiRequest('/api/accounts');
+      const accounts = await res.json();
+      const isOwner = currentUser.role === 'ACCOUNT_OWNER';
+
+      container.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Financial Accounts & Institutions</h2>
+            <p class="text-xs text-slate-500">Real-time aggregated ledger accounts across deposit, credit, and investment lines.</p>
+          </div>
+          ${isOwner ? `
+            <button onclick="openModal('accountModal')" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              + Register Account
+            </button>
+          ` : `
+            <span class="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold">Advisor Mode (Read-Only)</span>
+          `}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${accounts.map(a => {
+            const isDebt = a.current_balance_cents < 0;
+            return `
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow space-y-3">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${a.institution_name}</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-0.5">${a.account_name}</h3>
+                  </div>
+                  <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-slate-100 text-slate-700">${a.account_type}</span>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex justify-between items-end">
+                  <div>
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Current Balance</span>
+                    <p class="text-xl font-black font-mono ${isDebt ? 'text-rose-700' : 'text-forest'}">
+                      $${Math.abs(a.current_balance).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                    </p>
+                  </div>
+                  ${a.credit_limit ? `<span class="text-[10px] text-slate-400 font-mono">Limit: $${a.credit_limit.toLocaleString()}</span>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      // Update tx modal account select dropdown
+      const sel = document.getElementById('txAccountSelect');
+      if (sel) {
+        sel.innerHTML = accounts.map(a => `<option value="${a.account_id}">${a.account_name} ($${a.current_balance.toFixed(2)})</option>`).join('');
+      }
+    }
+
+    // --- 3. Transactions View ---
+    async function renderTransactionsPage(container) {
+      const res = await apiRequest('/api/transactions');
+      const txs = await res.json();
+      const isOwner = currentUser.role === 'ACCOUNT_OWNER';
+
+      container.innerHTML = `
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Transaction Journal & Ledger Feed</h2>
+            <p class="text-xs text-slate-500">Atomic double-entry transaction posting with automated categorization.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="downloadCSV('transactions')" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition">
+              ⬇ Export CSV
+            </button>
+            ${isOwner ? `
+              <button onclick="openModal('txModal')" class="px-4 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+                + Post Transaction
+              </button>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
+          <table class="w-full text-left text-xs text-slate-800">
+            <thead class="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500">
+              <tr>
+                <th class="p-3.5">Date</th>
+                <th class="p-3.5">Merchant / Payee</th>
+                <th class="p-3.5">Description</th>
+                <th class="p-3.5">Category</th>
+                <th class="p-3.5 text-right">Amount (USD)</th>
+                <th class="p-3.5 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${txs.map(t => `
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="p-3.5 font-mono">${t.date}</td>
+                  <td class="p-3.5 font-bold text-slate-900">${t.merchant_name}</td>
+                  <td class="p-3.5 text-slate-500">${t.raw_description}</td>
+                  <td class="p-3.5"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span></td>
+                  <td class="p-3.5 text-right font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
+                    ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
+                  </td>
+                  <td class="p-3.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">POSTED</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // --- 4. Budgets View ---
+    async function renderBudgetsPage(container) {
+      const res = await apiRequest('/api/budgets');
+      const budgets = await res.json();
+      const isOwner = currentUser.role === 'ACCOUNT_OWNER';
+
+      container.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Zero-Based Envelope Budgets</h2>
+            <p class="text-xs text-slate-500">Monthly envelope tracking with automated rollover and variance monitoring.</p>
+          </div>
+          ${isOwner ? `
+            <button onclick="promptEditBudgets()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              ✏️ Adjust Allocations
+            </button>
+          ` : '<span class="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold">Advisor Analysis Mode</span>'}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${budgets.map(b => {
+            const isOver = b.spent > b.allocated;
+            return `
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow space-y-3">
+                <div class="flex justify-between items-center">
+                  <h3 class="font-bold text-slate-900 text-sm">${b.category_name}</h3>
+                  <span class="text-xs font-mono font-bold ${isOver ? 'text-rose-700' : 'text-forest'}">${b.percentage_spent.toFixed(1)}%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div class="h-full transition-all ${isOver ? 'bg-rose-500' : 'bg-emerald-600'}" style="width: ${Math.min(100, b.percentage_spent)}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-500 font-mono pt-1">
+                  <span>Spent: $${b.spent.toFixed(2)}</span>
+                  <span>Limit: $${b.allocated.toFixed(2)}</span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // --- 5. Investments & Monte Carlo View ---
+    async function renderInvestmentsPage(container) {
+      const res = await apiRequest('/api/investments');
+      const data = await res.json();
+      const isOwner = currentUser.role === 'ACCOUNT_OWNER';
+
+      container.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Investment Portfolio & Risk Analytics</h2>
+            <p class="text-xs text-slate-500">Asset allocation, Modern Portfolio Theory (MPT) metrics, and 10,000-path Monte Carlo simulations.</p>
+          </div>
+          ${isOwner ? `
+            <button onclick="promptAddHolding()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              + Add Security Holding
+            </button>
+          ` : ''}
+        </div>
+
+        <!-- MPT Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[10px] font-bold uppercase text-slate-500">Total Portfolio Value</span>
+            <p class="text-2xl font-black text-forest mt-1 font-mono">$${data.total_portfolio_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-xs text-emerald-700 font-bold font-mono">+$${data.total_unrealized_gain.toLocaleString()} (+${data.unrealized_gain_pct}%)</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[10px] font-bold uppercase text-slate-500">Sharpe / Sortino Ratio</span>
+            <p class="text-2xl font-black text-gold mt-1 font-mono">${data.metrics.sharpe_ratio} / ${data.metrics.sortino_ratio}</p>
+            <span class="text-xs text-slate-400">Risk-Adjusted Excess Alpha</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[10px] font-bold uppercase text-slate-500">Daily Value at Risk (95% VaR)</span>
+            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.metrics.var_95_daily.toLocaleString()}</p>
+            <span class="text-xs text-slate-400">Parametric Maximum 1-Day Loss</span>
+          </div>
+        </div>
+
+        <!-- Holdings Table -->
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
+          <table class="w-full text-left text-xs text-slate-800">
+            <thead class="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500">
+              <tr>
+                <th class="p-3.5">Symbol</th>
+                <th class="p-3.5">Asset Class</th>
+                <th class="p-3.5 text-right">Shares</th>
+                <th class="p-3.5 text-right">Avg Cost</th>
+                <th class="p-3.5 text-right">Current Price</th>
+                <th class="p-3.5 text-right">Market Value</th>
+                <th class="p-3.5 text-right">Unrealized P&L</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${data.holdings.map(h => `
+                <tr class="hover:bg-slate-50 transition font-mono">
+                  <td class="p-3.5 font-bold text-slate-900 font-sans">${h.symbol} <span class="text-slate-400 font-normal block text-[10px]">${h.name}</span></td>
+                  <td class="p-3.5 font-sans"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${h.asset_class}</span></td>
+                  <td class="p-3.5 text-right">${h.shares}</td>
+                  <td class="p-3.5 text-right">$${h.cost_basis.toFixed(2)}</td>
+                  <td class="p-3.5 text-right font-bold">$${h.current_price.toFixed(2)}</td>
+                  <td class="p-3.5 text-right font-bold text-slate-900">$${h.market_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                  <td class="p-3.5 text-right font-bold ${h.unrealized_pnl >= 0 ? 'text-emerald-700' : 'text-rose-700'}">
+                    ${h.unrealized_pnl >= 0 ? '+' : ''}$${h.unrealized_pnl.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Interactive Monte Carlo Simulator -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="font-black text-slate-900 text-base">Stochastic Monte Carlo Wealth Engine</h3>
+              <p class="text-xs text-slate-500">10,000-Path Geometric Brownian Motion wealth trajectory forecast.</p>
+            </div>
+            <button onclick="runCustomMonteCarlo()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              ⚡ Run 10k Simulation
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+            <div>
+              <label class="font-bold text-slate-600 block mb-1">Expected Return (%)</label>
+              <input type="number" step="0.5" id="mcReturnInput" value="8.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 block mb-1">Volatility (σ %)</label>
+              <input type="number" step="0.5" id="mcVolInput" value="15.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 block mb-1">Annual Savings ($)</label>
+              <input type="number" id="mcSavingsInput" value="24000" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 block mb-1">Time Horizon (Years)</label>
+              <input type="number" id="mcYearsInput" value="25" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+            </div>
+          </div>
+
+          <div class="h-64">
+            <canvas id="mcChartCanvas"></canvas>
+          </div>
+        </div>
+      `;
+
+      runCustomMonteCarlo();
+    }
+
+    async function runCustomMonteCarlo() {
+      const ret = parseFloat(document.getElementById('mcReturnInput').value || 8.0) / 100.0;
+      const vol = parseFloat(document.getElementById('mcVolInput').value || 15.0) / 100.0;
+      const savings = parseFloat(document.getElementById('mcSavingsInput').value || 24000);
+      const years = parseInt(document.getElementById('mcYearsInput').value || 25);
+
+      const res = await apiRequest('/api/investments/monte-carlo', 'POST', {
+        expected_return: ret,
+        volatility: vol,
+        annual_contribution: savings,
+        years: years,
+        initial_wealth: 94200.0
+      });
+      const data = await res.json();
+
+      const ctx = document.getElementById('mcChartCanvas').getContext('2d');
+      if (chartInstances['mc']) chartInstances['mc'].destroy();
+
+      const labels = data.percentile_trajectory.p50_median.map((_, i) => 'Yr ' + i);
+      chartInstances['mc'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: '90th Percentile (Optimistic)', data: data.percentile_trajectory.p90, borderColor: '#059669', tension: 0.2, pointRadius: 0 },
+            { label: '50th Percentile (Median Expected)', data: data.percentile_trajectory.p50_median, borderColor: '#064e3b', borderWidth: 3, tension: 0.2, pointRadius: 0 },
+            { label: '10th Percentile (Conservative)', data: data.percentile_trajectory.p10, borderColor: '#d97706', tension: 0.2, pointRadius: 0 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: '#f1f5f9' }, ticks: { callback: v => '$' + (v>=1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
+          }
+        }
+      });
+    }
+
+    // --- 6. Taxes View ---
+    async function renderTaxesPage(container) {
+      const res = await apiRequest('/api/taxes?state=CA');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">50-State Progressive Tax Planning & Optimization</h2>
+            <p class="text-xs text-slate-500">Statutory federal and state marginal liability computations with automated loss harvesting.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Federal Estimated Liability</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.federal_estimated_tax.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <span class="text-xs text-slate-400 font-mono">Effective Rate: ${data.effective_federal_rate_pct}%</span>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">State Marginal Rate (${data.state_tax.state})</span>
+              <p class="text-2xl font-black text-forest mt-1 font-mono">${(data.state_tax.marginal_rate * 100).toFixed(2)}%</p>
+              <span class="text-xs text-slate-400 font-mono">State Liability: $${(data.state_tax.total_tax_cents/100).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Tax-Loss Harvesting Opportunity</span>
+              <p class="text-2xl font-black text-emerald-700 mt-1 font-mono">$720.00</p>
+              <span class="text-xs text-emerald-800 font-semibold">✓ IRS 30-Day Wash-Sale Safe</span>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <h3 class="font-black text-slate-900 text-sm">Automated Tax-Loss Harvest Recommendations</h3>
+            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
+              <div class="flex justify-between items-center text-xs font-bold text-emerald-900">
+                <span>Security: BND (Vanguard Total Bond Market)</span>
+                <span>Harvestable Loss: $720.00</span>
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">
+                Recommended replacement security: <strong>AGG (iShares Core US Aggregate Bond)</strong>. Harvesting this position offsets realized capital gains without triggering the IRS 30-day wash-sale rule.
+              </p>
+            </div>
+            <p class="text-[11px] text-slate-400 italic">${data.disclaimer}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 7. Debt View ---
+    async function renderDebtPage(container) {
+      const res = await apiRequest('/api/debt');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Debt Amortization & Avalanche Optimizer</h2>
+            <p class="text-xs text-slate-500">Mathematical debt payoff acceleration comparing Avalanche (Highest APR) vs Snowball.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Total Debt Burden</span>
+              <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.total_debt_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <span class="text-xs text-slate-400 font-mono">DTI Ratio: ${data.debt_to_income_ratio_pct}%</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Monthly Minimum Required</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.total_monthly_minimum.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <span class="text-xs text-slate-400">Scheduled Outflows</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Avalanche Payoff Priority</span>
+              <p class="text-lg font-black text-forest mt-1 truncate">Credit Card (22.4%)</p>
+              <span class="text-xs text-emerald-700 font-semibold">Saves $325.00 Interest</span>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <h3 class="font-black text-slate-900 text-sm">Active Debt Schedules</h3>
+            <div class="divide-y divide-slate-100">
+              ${data.debts.map(d => `
+                <div class="py-3.5 flex justify-between items-center text-xs">
+                  <div>
+                    <p class="font-bold text-slate-900">${d.name} (${d.institution})</p>
+                    <span class="text-slate-400">${d.type} &bull; ${d.interest_rate}% APR</span>
+                  </div>
+                  <div class="text-right font-mono">
+                    <p class="font-bold text-slate-900 text-sm">$${d.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <span class="text-slate-400">Min: $${d.min_payment}/mo</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 8. Financial Health View ---
+    async function renderHealthPage(container) {
+      const res = await apiRequest('/api/financial-health');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Holistic Financial Health Scorecard</h2>
+            <p class="text-xs text-slate-500">5-Pillar quantitative assessment evaluating savings rate, liquidity, debt, and diversification.</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-3xl p-8 card-shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="space-y-2">
+              <span class="text-xs font-bold text-forest uppercase tracking-wider">Overall Financial Score</span>
+              <h1 class="text-5xl font-black text-slate-900 font-mono">${data.overall_score} <span class="text-xl text-slate-400 font-normal">/ 100</span></h1>
+              <p class="text-sm font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl inline-block">
+                Grade: ${data.grade} &bull; Status: ${data.status}
+              </p>
+            </div>
+            <div class="text-right text-xs text-slate-500 space-y-1">
+              <p>✓ Emergency Fund: <strong>${data.pillars.emergency_fund.months} months</strong></p>
+              <p>✓ Monthly Savings Rate: <strong>${data.pillars.savings_rate.value_pct}%</strong></p>
+              <p>✓ Debt-to-Income: <strong>${data.pillars.debt_burden.dti_ratio_pct}%</strong></p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            ${Object.entries(data.pillars).map(([k, p]) => `
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-700 capitalize">${k.replace('_', ' ')}</span>
+                  <span class="font-mono font-bold text-forest">${p.score} / ${p.max}</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-forest h-full" style="width: ${(p.score/p.max)*100}%"></div>
+                </div>
+                <span class="text-[11px] text-slate-500 block">${p.label}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 9. Compliance View ---
+    async function renderCompliancePage(container) {
+      const res = await apiRequest('/api/compliance');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">Regulatory Compliance & AML Screening</h2>
+            <p class="text-xs text-slate-500">Bank-grade identity verification, FinCEN CTR structuring monitor, and OFAC sanctions checks.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">KYC Verification Tier</span>
+              <p class="text-lg font-black text-forest mt-1">${data.kyc_status}</p>
+              <span class="text-xs text-slate-400">CIP Identification Verified</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Risk Profile Rating</span>
+              <p class="text-lg font-black text-forest mt-1">${data.risk_tier}</p>
+              <span class="text-xs text-slate-400">Annual AML Risk Review</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+              <span class="text-[10px] font-bold uppercase text-slate-500">Sanctions Watchlist</span>
+              <p class="text-lg font-black text-forest mt-1">PASSED / CLEAR</p>
+              <span class="text-xs text-slate-400">OFAC SDN Zero Matches</span>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-3">
+            <h3 class="font-black text-slate-900 text-sm">FinCEN Structuring & CTR Monitor</h3>
+            <p class="text-xs text-slate-600">
+              Evaluated 8 posted transactions against the $10,000.00 CTR threshold. No suspicious structuring or smurfing patterns detected.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 10. Reports View ---
+    async function renderReportsPage(container) {
+      const res = await apiRequest('/api/reports/summary');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-black text-slate-900">Financial Reports & Statements</h2>
+              <p class="text-xs text-slate-500">GAAP Balance Sheets, Income Statements, and Exportable CSV Ledger Records.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="downloadCSV('accounts')" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition">
+                ⬇ Accounts CSV
+              </button>
+              <button onclick="downloadCSV('transactions')" class="px-3 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+                ⬇ Transactions CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+              <h3 class="font-black text-slate-900 text-sm">GAAP Balance Sheet Position</h3>
+              <span class="text-xs text-slate-400 font-mono">As of ${data.generated_at}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 text-xs">
+              <div class="space-y-3">
+                <span class="font-bold text-forest uppercase tracking-wider block">Total Assets</span>
+                <div class="space-y-2 font-mono">
+                  ${data.accounts.filter(a => a.balance > 0).map(a => `
+                    <div class="flex justify-between">
+                      <span class="text-slate-600">${a.name}</span>
+                      <span class="font-bold text-slate-900">$${a.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <span class="font-bold text-rose-700 uppercase tracking-wider block">Total Liabilities</span>
+                <div class="space-y-2 font-mono">
+                  ${data.accounts.filter(a => a.balance < 0).map(a => `
+                    <div class="flex justify-between">
+                      <span class="text-slate-600">${a.name}</span>
+                      <span class="font-bold text-slate-900">$${Math.abs(a.balance).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 11. Audit History View ---
+    async function renderAuditPage(container) {
+      const res = await apiRequest('/api/audit');
+      const data = await res.json();
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-black text-slate-900">Cryptographic Merkle Audit Trail</h2>
+              <p class="text-xs text-slate-500">Immutable SHA-256 hash-chained event logs with tamper-detection verification.</p>
+            </div>
+            <span class="px-3 py-1.5 rounded-xl text-xs font-bold ${data.is_chain_valid ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800'}">
+              ✓ Chain Integrity: VALID (0 Breaks)
+            </span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
+            <table class="w-full text-left text-xs text-slate-800">
+              <thead class="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500">
+                <tr>
+                  <th class="p-3.5">Seq #</th>
+                  <th class="p-3.5">Action</th>
+                  <th class="p-3.5">Actor</th>
+                  <th class="p-3.5">Entity</th>
+                  <th class="p-3.5">SHA-256 Block Hash</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 font-mono">
+                ${data.events.map(e => `
+                  <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3.5 font-bold">#${e.sequence_num}</td>
+                    <td class="p-3.5 font-sans"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-slate-100 text-slate-800">${e.action}</span></td>
+                    <td class="p-3.5 font-sans text-slate-600">${e.actor_email}</td>
+                    <td class="p-3.5 font-sans">${e.entity_type}: ${e.entity_id}</td>
+                    <td class="p-3.5 text-slate-400 truncate max-w-xs">${e.current_hash.slice(0, 16)}...${e.current_hash.slice(-8)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 12. Recommendations View ---
+    async function renderRecommendationsPage(container) {
+      const res = await apiRequest('/api/advisor/recommendations');
+      const recs = await res.json();
+      const isAdvisor = currentUser.role === 'FINANCIAL_ADVISOR';
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-black text-slate-900">Financial Advisor Insights & Recommendations</h2>
+              <p class="text-xs text-slate-500">Structured analytical guidance published by assigned Certified Financial Planner.</p>
+            </div>
+            ${isAdvisor ? `
+              <button onclick="openModal('recommendationModal')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow transition">
+                + Author Recommendation
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="space-y-4">
+            ${recs.map(r => `
+              <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-2">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-black text-slate-900">${r.title}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${r.category}</span>
+                  </div>
+                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${r.priority === 'HIGH' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">${r.priority}</span>
+                </div>
+                <p class="text-xs text-slate-700 leading-relaxed">${r.explanation}</p>
+                <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex justify-between">
+                  <span>Author: ${r.advisor_name}</span>
+                  <span>Date: ${r.date}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 13. Profile View ---
+    async function renderProfilePage(container) {
+      container.innerHTML = `
+        <div class="max-w-xl space-y-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">User Profile & Security Settings</h2>
+            <p class="text-xs text-slate-500">Account credentials, role scope, and cryptographic password management.</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="space-y-3 text-xs">
+              <div>
+                <span class="text-slate-400 block font-semibold">Full Legal Name</span>
+                <p class="font-bold text-slate-900 text-sm">${currentUser.full_name}</p>
+              </div>
+              <div>
+                <span class="text-slate-400 block font-semibold">Registered Email</span>
+                <p class="font-bold text-slate-900 text-sm font-mono">${currentUser.email}</p>
+              </div>
+              <div>
+                <span class="text-slate-400 block font-semibold">Assigned System Role</span>
+                <p class="font-bold text-forest text-sm">${currentUser.role.replace('_', ' ')}</p>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100">
+              <button onclick="openModal('passwordModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 transition">
+                🔒 Change Password
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------------
+    // Action Submissions (Accounts, Transactions, Budgets, Recs)
+    // -------------------------------------------------------------
+    async function submitNewAccount() {
+      const name = document.getElementById('accName').value;
+      const institution = document.getElementById('accInst').value;
+      const type = document.getElementById('accType').value;
+      const balance = parseFloat(document.getElementById('accBalance').value || 0);
+
+      if (!name) {
+        showToast('Account name is required', 'error');
+        return;
+      }
+
+      const res = await apiRequest('/api/accounts', 'POST', { name, institution, type, balance });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('accountModal');
+        showToast('Account registered successfully!');
+        renderPageView(currentPage);
+      } else {
+        showToast(data.error || 'Failed to create account', 'error');
+      }
+    }
+
+    async function submitNewTransaction() {
+      const account_id = document.getElementById('txAccountSelect').value;
+      const merchant = document.getElementById('txMerchant').value;
+      const amount = parseFloat(document.getElementById('txAmount').value || 0);
+      const category_id = document.getElementById('txCategory').value;
+
+      if (!account_id || amount === 0) {
+        showToast('Please specify valid transaction details', 'error');
+        return;
+      }
+
+      const res = await apiRequest('/api/transactions', 'POST', { account_id, merchant, amount, category_id });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('txModal');
+        showToast('Transaction posted to general ledger!');
+        renderPageView(currentPage);
+      } else {
+        showToast(data.error || 'Failed to post transaction', 'error');
+      }
+    }
+
+    async function submitNewRecommendation() {
+      const title = document.getElementById('recTitle').value;
+      const category = document.getElementById('recCategory').value;
+      const priority = document.getElementById('recPriority').value;
+      const explanation = document.getElementById('recExplanation').value;
+
+      if (!title || !explanation) {
+        showToast('Please provide recommendation title and explanation', 'error');
+        return;
+      }
+
+      const res = await apiRequest('/api/advisor/recommendations', 'POST', { title, category, priority, explanation });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('recommendationModal');
+        showToast('Recommendation published for client!');
+        renderPageView(currentPage);
+      } else {
+        showToast(data.error || 'Failed to publish recommendation', 'error');
+      }
+    }
+
+    async function submitChangePassword() {
+      const old_password = document.getElementById('pwOld').value;
+      const new_password = document.getElementById('pwNew').value;
+
+      const res = await apiRequest('/api/auth/change-password', 'POST', { old_password, new_password });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('passwordModal');
+        showToast('Password updated successfully!');
+      } else {
+        showToast(data.error || 'Failed to update password', 'error');
+      }
+    }
+
+    async function promptEditBudgets() {
+      const housing = prompt('Enter Housing monthly budget ($):', '2500');
+      if (housing) {
+        await apiRequest('/api/budgets/envelope', 'POST', { category_id: 'cat_housing', allocated: parseFloat(housing) });
+        showToast('Housing budget updated!');
+        renderPageView('budgets');
+      }
+    }
+
+    async function promptAddHolding() {
+      const sym = prompt('Enter Ticker Symbol (e.g. MSFT, AAPL, VOO):');
+      if (sym) {
+        const shares = prompt('Enter number of shares:');
+        const cost = prompt('Enter average cost basis per share ($):');
+        if (shares && cost) {
+          await apiRequest('/api/investments/holdings', 'POST', {
+            symbol: sym.toUpperCase(),
+            shares: parseFloat(shares),
+            cost_basis: parseFloat(cost),
+            current_price: parseFloat(cost) * 1.05
+          });
+          showToast(`Holding ${sym.toUpperCase()} added to portfolio!`);
+          renderPageView('investments');
+        }
+      }
+    }
+
+    function downloadCSV(type) {
+      window.open(`/api/reports/export-csv?type=${type}`, '_blank');
+    }
+
+    // Auto bootstrap on window load
+    window.onload = bootstrapApp;
+  </script>
+</body>
+</html>

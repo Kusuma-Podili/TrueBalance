@@ -172,7 +172,13 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         self.end_headers()
-        self.wfile.write(json.dumps(data, indent=2).encode("utf-8"))
+        def _encoder(o):
+            if hasattr(o, "value"):
+                return float(o.value) if str(o.value).replace(".", "", 1).replace("-", "", 1).isdigit() else str(o.value)
+            if hasattr(o, "__dict__"):
+                return o.__dict__
+            return str(o)
+        self.wfile.write(json.dumps(data, indent=2, default=_encoder).encode("utf-8"))
 
     def _send_error(self, message: str, status: int = 400):
         self._send_json({"error": message, "status": status}, status=status)
@@ -225,6 +231,10 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             client_id = self._get_target_client_id(auth_user) if auth_user else OWNER_ID
+
+            if path == "/api/health":
+                self._send_json({"status": "UP", "timestamp": time.time()})
+                return
 
             # 1. Auth Me
             if path == "/api/auth/me":
@@ -325,9 +335,9 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
 
                 # Calculate MPT metrics
                 returns_series = [0.012, -0.005, 0.021, 0.015, -0.010, 0.018, 0.009, 0.022, -0.004, 0.014]
-                sharpe = PortfolioRiskMetrics.calculate_sharpe_ratio(returns_series)
-                sortino = PortfolioRiskMetrics.calculate_sortino_ratio(returns_series)
-                var_95 = PortfolioRiskMetrics.calculate_value_at_risk(total_val, returns_series, 0.95)
+                sharpe = PortfolioRiskMetrics.sharpe_ratio(returns_series)
+                sortino = PortfolioRiskMetrics.sortino_ratio(returns_series)
+                var_95 = PortfolioRiskMetrics.value_at_risk_parametric(total_val, 0.95)
 
                 self._send_json({
                     "total_portfolio_value": total_val,

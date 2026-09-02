@@ -25,7 +25,6 @@ class FinancialReportsGenerator:
     ) -> Dict[str, Any]:
         assets, debts, net_worth = account_mgr.compute_net_worth(user_id)
         accounts = account_mgr.list_user_accounts(user_id)
-        sheet = ledger.generate_balance_sheet()
         tb_rows, total_debits, total_credits, is_balanced = ledger.generate_trial_balance()
         budget_status = budget_mgr.get_envelope_status(user_id, time.strftime("%Y-%m"))
 
@@ -50,7 +49,12 @@ class FinancialReportsGenerator:
                 }
                 for a in accounts
             ],
-            "balance_sheet": sheet,
+            "balance_sheet": {
+                "total_assets": float(assets.value),
+                "total_liabilities": float(debts.value),
+                "net_worth": float(net_worth.value),
+                "is_balanced": is_balanced
+            },
             "budget_envelopes": [
                 {
                     "category": b["category_id"].replace("cat_", ""),

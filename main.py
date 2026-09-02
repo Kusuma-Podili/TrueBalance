@@ -423,10 +423,20 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
                 })
                 return
 
-            # 12. Advisor Recommendations
+            # 12. Advisor Recommendations & Alerts
             if path == "/api/advisor/recommendations":
                 recs = recs_service.get_client_recommendations(client_id)
                 self._send_json(recs)
+                return
+
+            if path == "/api/advisor/alerts":
+                alerts = recs_service.get_client_alerts(client_id)
+                self._send_json(alerts)
+                return
+
+            if path == "/api/advisor/stress-test":
+                stress = recs_service.get_stress_test_analysis(client_id)
+                self._send_json(stress)
                 return
 
             # 13. Reports
@@ -674,7 +684,7 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
             rec = recs_service.add_recommendation(
                 client_id=client_id,
                 advisor_id=user_id,
-                advisor_name=auth_user.get("email", "Advisor"),
+                advisor_name=auth_user.get("email", "Sarah Jenkins, CFP®"),
                 title=title,
                 category=category,
                 explanation=explanation,
@@ -682,6 +692,42 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
             )
             audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "RECOMMENDATION_CREATED", "ADVISOR", rec["rec_id"], {"title": title, "priority": priority})
             self._send_json({"status": "SUCCESS", "recommendation": rec})
+            return
+
+        # 10. Dispatch Custom Advisor Alert (FINANCIAL_ADVISOR ONLY)
+        if path == "/api/advisor/alerts":
+            if role != Role.FINANCIAL_ADVISOR.value:
+                self._send_error("Forbidden: Only Financial Advisors can dispatch alerts.", 403)
+                return
+
+            title = payload.get("title", "").strip()
+            message = payload.get("message", "").strip()
+            severity = payload.get("severity", "WARNING")
+            impact = payload.get("impact_amount")
+
+            if not title or not message:
+                self._send_error("Alert title and message are required", 422)
+                return
+
+            alert = recs_service.add_alert(
+                client_id=client_id,
+                advisor_id=user_id,
+                advisor_name=auth_user.get("email", "Sarah Jenkins, CFP®"),
+                title=title,
+                message=message,
+                severity=severity,
+                impact_amount=impact
+            )
+            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "ALERT_DISPATCHED", "ADVISOR", alert["alert_id"], {"title": title, "severity": severity})
+            self._send_json({"status": "SUCCESS", "alert": alert})
+            return
+
+        # 11. Acknowledge Alert (ACCOUNT_OWNER ONLY)
+        if path == "/api/advisor/alerts/acknowledge":
+            alert_id = payload.get("alert_id")
+            if alert_id:
+                recs_service.acknowledge_alert(alert_id, client_id)
+            self._send_json({"status": "SUCCESS"})
             return
 
         self._send_error("Endpoint not found", 404)

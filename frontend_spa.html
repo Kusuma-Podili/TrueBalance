@@ -11,68 +11,47 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --brand-forest: #064e3b;
-      --brand-forest-dark: #022c22;
-      --brand-forest-light: #059669;
-      --brand-emerald: #10b981;
-      --brand-gold: #d97706;
-      --brand-gold-light: #f59e0b;
-      --brand-gold-subtle: #fef3c7;
-      --bg-canvas: #f8fafc;
-      --bg-surface: #ffffff;
-      --border-subtle: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-    }
-
     body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
+      background-color: #ffffff;
+      color: #0f172a;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .bg-forest { background-color: var(--brand-forest); }
-    .bg-forest-dark { background-color: var(--brand-forest-dark); }
-    .text-forest { color: var(--brand-forest); }
-    .text-gold { color: var(--brand-gold); }
-    .border-gold { border-color: var(--brand-gold); }
-    .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); }
-    .card-shadow-lg { box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.08), 0 8px 10px -6px rgba(6, 78, 59, 0.04); }
-    .modal-backdrop { background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+    .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02); }
+    .card-shadow-lg { box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.03); }
+    .modal-backdrop { background-color: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-white text-slate-900">
 
   <!-- TOAST NOTIFICATIONS -->
-  <div id="toast" class="hidden fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border text-sm font-semibold transition-all"></div>
+  <div id="toast" class="hidden fixed top-6 right-6 z-50 p-4 rounded-xl shadow-xl border text-sm font-semibold transition-all"></div>
 
   <!-- ========================================================================= -->
-  <!-- 1. UNIFIED LOGIN VIEW                                                     -->
+  <!-- 1. UNIFIED LOGIN VIEW (PURE WHITE MINIMAL THEME)                         -->
   <!-- ========================================================================= -->
-  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-slate-100">
-    <div class="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 card-shadow-lg space-y-6">
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-slate-50/50">
+    <div class="max-w-md w-full bg-white border border-slate-200 rounded-2xl p-8 card-shadow-lg space-y-6">
       
       <!-- Brand Header -->
       <div class="text-center space-y-2">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-forest text-amber-400 font-extrabold text-2xl shadow-md">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-900 text-white font-extrabold text-xl shadow-sm">
           TB
         </div>
-        <h1 class="text-2xl font-black tracking-tight text-slate-900 mt-2">TRUEBALANCE</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 mt-2">TRUEBALANCE</h1>
         <p class="text-xs text-slate-500 font-medium">Wealth Intelligence & Financial Management</p>
       </div>
 
       <!-- Demo Account Quick Selectors -->
-      <div class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl text-xs space-y-2">
-        <span class="font-bold text-amber-900 block text-[11px] uppercase tracking-wider">Quick Demo Login:</span>
+      <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2">
+        <span class="font-bold text-slate-700 block text-[11px] uppercase tracking-wider">Quick Demo Login:</span>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="fillLogin('user@truebalance.com', 'User@123')" class="p-2 bg-white hover:bg-amber-100/60 border border-amber-200 rounded-xl text-left font-semibold text-slate-800 transition">
-            <span class="block text-[10px] text-amber-700 font-bold uppercase">Account Owner</span>
+          <button onclick="fillLogin('user@truebalance.com', 'User@123')" class="p-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+            <span class="block text-[10px] text-emerald-700 font-bold uppercase">Account Owner</span>
             user@truebalance.com
           </button>
-          <button onclick="fillLogin('advisor@truebalance.com', 'Advisor@123')" class="p-2 bg-white hover:bg-amber-100/60 border border-amber-200 rounded-xl text-left font-semibold text-slate-800 transition">
-            <span class="block text-[10px] text-emerald-800 font-bold uppercase">Financial Advisor</span>
+          <button onclick="fillLogin('advisor@truebalance.com', 'Advisor@123')" class="p-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-left font-semibold text-slate-800 transition">
+            <span class="block text-[10px] text-blue-700 font-bold uppercase">Financial Advisor</span>
             advisor@truebalance.com
           </button>
         </div>
@@ -82,16 +61,16 @@
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
-          <input type="email" id="loginEmail" required placeholder="user@truebalance.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+          <input type="email" id="loginEmail" required placeholder="user@truebalance.com" class="w-full bg-slate-50/60 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition">
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-xs font-bold text-slate-700">Password</label>
-            <button type="button" onclick="showForgotPassword()" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold">Forgot password?</button>
+            <button type="button" onclick="showForgotPassword()" class="text-xs text-slate-500 hover:text-slate-800 font-medium">Forgot password?</button>
           </div>
           <div class="relative">
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition pr-10">
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50/60 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition pr-10">
             <button type="button" onclick="togglePasswordVisibility('loginPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400 hover:text-slate-600 font-semibold">
               👁️
             </button>
@@ -99,115 +78,118 @@
         </div>
 
         <div class="flex items-center">
-          <input type="checkbox" id="rememberMe" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-2">
+          <input type="checkbox" id="rememberMe" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900 mr-2">
           <label for="rememberMe" class="text-xs text-slate-600">Remember my session on this device</label>
         </div>
 
-        <button type="submit" id="loginBtn" class="w-full py-3 bg-forest hover:bg-forest-dark text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-950/20 transition flex items-center justify-center gap-2">
+        <button type="submit" id="loginBtn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow transition flex items-center justify-center gap-2">
           <span>Sign In to TrueBalance</span>
         </button>
       </form>
 
       <div class="pt-2 text-center border-t border-slate-100">
-        <p class="text-[11px] text-slate-400">Protected by 256-bit End-to-End Cryptography & NIST PBKDF2 Hashing</p>
+        <p class="text-[11px] text-slate-400">Protected by 256-bit Cryptography & NIST PBKDF2 Hashing</p>
       </div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 2. AUTHENTICATED APP SHELL (SIDEBAR + CONTENT)                            -->
+  <!-- 2. AUTHENTICATED APP SHELL (PURE WHITE MINIMAL SIDEBAR + CONTENT)         -->
   <!-- ========================================================================= -->
-  <div id="appShell" class="hidden min-h-screen flex flex-col md:flex-row">
+  <div id="appShell" class="hidden min-h-screen flex flex-col md:flex-row bg-white">
     
-    <!-- Left Navigation Sidebar -->
-    <aside class="w-full md:w-64 bg-forest-dark text-white flex flex-col justify-between shrink-0 shadow-xl">
+    <!-- Left Navigation Sidebar (Pure White Minimal) -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0">
       <div>
         <!-- App Branding -->
-        <div class="p-6 border-b border-emerald-900/60 flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-amber-300 font-black text-lg flex items-center justify-center shadow-md">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-black text-base flex items-center justify-center shadow-sm">
             TB
           </div>
           <div>
-            <h2 class="font-black text-lg tracking-tight leading-none text-white">TrueBalance</h2>
-            <span class="text-[10px] text-emerald-300/80 font-medium">Wealth Platform</span>
+            <h2 class="font-extrabold text-base tracking-tight leading-none text-slate-900">TrueBalance</h2>
+            <span class="text-[11px] text-slate-400 font-medium">Wealth Platform</span>
           </div>
         </div>
 
         <!-- Role Badge & Active User -->
-        <div class="px-6 py-4 bg-emerald-950/80 border-b border-emerald-900/40 space-y-1">
+        <div class="px-6 py-4 bg-slate-50/70 border-b border-slate-100 space-y-1">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Active Role</span>
-            <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40"></span>
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Role</span>
+            <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-800 border border-slate-300"></span>
           </div>
-          <p id="userNameDisplay" class="font-bold text-sm text-white truncate"></p>
-          <p id="userEmailDisplay" class="text-xs text-emerald-200/60 truncate"></p>
+          <p id="userNameDisplay" class="font-bold text-sm text-slate-900 truncate"></p>
+          <p id="userEmailDisplay" class="text-xs text-slate-500 truncate"></p>
         </div>
 
         <!-- Dynamic Role Navigation Menu -->
-        <nav id="navMenu" class="p-4 space-y-1 text-sm font-medium">
+        <nav id="navMenu" class="p-3 space-y-1 text-xs font-semibold">
           <!-- Injected dynamically based on role -->
         </nav>
       </div>
 
       <!-- Sidebar Footer -->
-      <div class="p-4 border-t border-emerald-900/60">
-        <button onclick="handleLogout()" class="w-full py-2 px-3 rounded-xl bg-emerald-950/60 hover:bg-rose-950/80 text-emerald-200 hover:text-rose-200 border border-emerald-900 hover:border-rose-900 text-xs font-bold transition flex items-center justify-center gap-2">
+      <div class="p-4 border-t border-slate-100">
+        <button onclick="handleLogout()" class="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-xs font-bold transition flex items-center justify-center gap-2">
           <span>🚪 Sign Out</span>
         </button>
       </div>
     </aside>
 
     <!-- Main Workspace Area -->
-    <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
+    <main class="flex-1 flex flex-col min-w-0 bg-white">
       
       <!-- Top Bar -->
-      <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-sm shrink-0">
+      <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-4">
           <h2 id="pageTitle" class="text-lg font-black text-slate-900">Dashboard</h2>
-          <div id="advisorClientCallout" class="hidden text-xs px-3 py-1 bg-amber-50 border border-amber-200 rounded-full font-bold text-amber-900 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            Viewing Client: <span id="clientNameTag" class="underline">Alex Vance</span>
+          <div id="advisorClientCallout" class="hidden text-xs px-3 py-1 bg-slate-100 border border-slate-200 rounded-full font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            Assigned Client: <span id="clientNameTag" class="font-semibold underline">Alex Vance</span>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
           <!-- Double-Entry Equilibrium Badge -->
           <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Ledger Status: ✓ Balanced
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Ledger Status: ✓ Balanced
           </span>
 
           <!-- Quick Action Buttons -->
           <div id="ownerActionButtons" class="flex items-center gap-2">
-            <button onclick="openModal('txModal')" class="px-3 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+            <button onclick="openModal('txModal')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-sm transition">
               + Transaction
             </button>
-            <button onclick="openModal('accountModal')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 transition">
+            <button onclick="openModal('accountModal')" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl border border-slate-300 transition">
               + Account
             </button>
           </div>
 
           <div id="advisorActionButtons" class="hidden flex items-center gap-2">
-            <button onclick="openModal('recommendationModal')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow transition">
-              + Recommendation
+            <button onclick="openModal('alertModal')" class="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold rounded-xl shadow-sm transition">
+              🚨 Issue Alert
+            </button>
+            <button onclick="openModal('recommendationModal')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-sm transition">
+              💡 Add Recommendation
             </button>
           </div>
         </div>
       </header>
 
       <!-- Scrollable Main Page Viewport -->
-      <div id="pageContent" class="p-6 md:p-8 flex-1 overflow-y-auto space-y-8">
+      <div id="pageContent" class="p-6 md:p-8 flex-1 overflow-y-auto space-y-8 bg-white">
         <!-- Injected dynamically by router -->
       </div>
     </main>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 3. MODALS (ACCOUNTS, TRANSACTIONS, BUDGETS, RECOMMENDATIONS, PASSWORD)    -->
+  <!-- 3. MODALS (ACCOUNTS, TRANSACTIONS, ALERTS, RECOMMENDATIONS, PASSWORD)     -->
   <!-- ========================================================================= -->
 
   <!-- Add Account Modal -->
   <div id="accountModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
         <h3 class="font-bold text-slate-900 text-base">Register Financial Account</h3>
         <button onclick="closeModal('accountModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
@@ -238,7 +220,7 @@
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitNewAccount()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+        <button onclick="submitNewAccount()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition">
           Create Account
         </button>
         <button onclick="closeModal('accountModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
@@ -250,7 +232,7 @@
 
   <!-- Add Transaction Modal -->
   <div id="txModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
         <h3 class="font-bold text-slate-900 text-base">Record Ledger Transaction</h3>
         <button onclick="closeModal('txModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
@@ -282,7 +264,7 @@
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitNewTransaction()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+        <button onclick="submitNewTransaction()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition">
           Post Transaction
         </button>
         <button onclick="closeModal('txModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
@@ -292,11 +274,51 @@
     </div>
   </div>
 
+  <!-- Dispatch Alert Modal (Advisor Only) -->
+  <div id="alertModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-lg w-full shadow-xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">🚨 Dispatch Financial Alert to Client</h3>
+        <button onclick="closeModal('alertModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Alert Severity</label>
+          <select id="alertSeverity" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+            <option value="CRITICAL">🔴 Critical Urgent Risk (High Debt APR, Overdraft)</option>
+            <option value="WARNING">🟡 Warning / Portfolio Drift (Cash Drag, Overspending)</option>
+            <option value="OPPORTUNITY">🟢 Financial Opportunity (Tax Harvest, Rebalance)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Alert Headline</label>
+          <input type="text" id="alertTitle" placeholder="e.g. Credit Card Interest Drag Alert" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Impact Summary (Optional)</label>
+          <input type="text" id="alertImpact" placeholder="e.g. -$325/yr Interest Burn" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1">Financial Analysis & Recommended Action</label>
+          <textarea id="alertMessage" rows="3" placeholder="Explain the mathematical risk and specific steps the client must take..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="submitNewAlert()" class="flex-1 py-2.5 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs rounded-xl shadow transition">
+          🚀 Send Live Alert to Client
+        </button>
+        <button onclick="closeModal('alertModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Advisor Recommendation Modal -->
   <div id="recommendationModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-lg w-full shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-        <h3 class="font-bold text-slate-900 text-base">Issue Advisor Recommendation</h3>
+        <h3 class="font-bold text-slate-900 text-base">Issue Strategic Recommendation</h3>
         <button onclick="closeModal('recommendationModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
       </div>
       <div class="space-y-3">
@@ -317,7 +339,7 @@
             </select>
           </div>
           <div>
-            <label class="text-xs font-bold text-slate-700 block mb-1">Priority Level</label>
+            <label class="text-xs font-bold text-slate-700 block mb-1">Priority</label>
             <select id="recPriority" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
               <option value="HIGH">High Priority</option>
               <option value="MEDIUM">Medium Priority</option>
@@ -327,11 +349,11 @@
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Detailed Explanation & Analysis</label>
-          <textarea id="recExplanation" rows="4" placeholder="Explain the quantitative rationale and action steps..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
+          <textarea id="recExplanation" rows="3" placeholder="Explain the quantitative rationale and action steps..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitNewRecommendation()" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition">
+        <button onclick="submitNewRecommendation()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition">
           Publish Recommendation
         </button>
         <button onclick="closeModal('recommendationModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
@@ -343,7 +365,7 @@
 
   <!-- Change Password Modal -->
   <div id="passwordModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
         <h3 class="font-bold text-slate-900 text-base">Change Account Password</h3>
         <button onclick="closeModal('passwordModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
@@ -359,7 +381,7 @@
         </div>
       </div>
       <div class="flex gap-3 pt-2">
-        <button onclick="submitChangePassword()" class="flex-1 py-2.5 bg-forest hover:bg-forest-dark text-white font-bold text-xs rounded-xl shadow transition">
+        <button onclick="submitChangePassword()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition">
           Update Password
         </button>
         <button onclick="closeModal('passwordModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl border border-slate-200">
@@ -376,14 +398,11 @@
     let currentPage = 'dashboard';
     let chartInstances = {};
 
-    // -------------------------------------------------------------
-    // Auth & Navigation Utilities
-    // -------------------------------------------------------------
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.innerText = msg;
-      t.className = `fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl border text-sm font-bold ${
-        type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100'
+      t.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-xl border text-sm font-bold ${
+        type === 'success' ? 'bg-slate-900 border-slate-800 text-white' : 'bg-rose-900 border-rose-800 text-white'
       }`;
       t.classList.remove('hidden');
       setTimeout(() => t.classList.add('hidden'), 3500);
@@ -421,9 +440,6 @@
       return res;
     }
 
-    // -------------------------------------------------------------
-    // Login & Session Management
-    // -------------------------------------------------------------
     async function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
@@ -460,9 +476,6 @@
       document.getElementById('loginView').classList.remove('hidden');
     }
 
-    // -------------------------------------------------------------
-    // App Initialization & Role Sidebar Setup
-    // -------------------------------------------------------------
     async function bootstrapApp() {
       if (!accessToken) {
         document.getElementById('loginView').classList.remove('hidden');
@@ -482,7 +495,6 @@
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
 
-      // Update Header Info
       document.getElementById('userNameDisplay').innerText = currentUser.full_name;
       document.getElementById('userEmailDisplay').innerText = currentUser.email;
       document.getElementById('userRoleBadge').innerText = currentUser.role.replace('_', ' ');
@@ -492,10 +504,7 @@
       document.getElementById('ownerActionButtons').classList.toggle('hidden', isAdvisor);
       document.getElementById('advisorActionButtons').classList.toggle('hidden', !isAdvisor);
 
-      // Build Role Sidebar
       buildSidebarNav(isAdvisor);
-
-      // Navigate to initial page
       navigateTo('dashboard');
     }
 
@@ -504,41 +513,41 @@
       nav.innerHTML = '';
 
       const ownerItems = [
-        { id: 'dashboard', label: '📊 Dashboard', desc: 'Financial Overview' },
-        { id: 'accounts', label: '🏦 Accounts', desc: 'Bank & Asset Management' },
-        { id: 'transactions', label: '💳 Transactions', desc: 'Ledger Ingestion' },
-        { id: 'budgets', label: '🎯 Budgets', desc: 'Zero-Based Envelopes' },
-        { id: 'investments', label: '📈 Investments', desc: 'Holdings & Monte Carlo' },
-        { id: 'taxes', label: '📑 Taxes', desc: '50-State Planning' },
-        { id: 'debt', label: '📉 Debt Payoff', desc: 'Avalanche Optimizer' },
-        { id: 'health', label: '🩺 Financial Health', desc: 'Score & Pillars' },
-        { id: 'compliance', label: '🛡️ Compliance', desc: 'KYC & AML Monitor' },
-        { id: 'reports', label: '📋 Reports', desc: 'Financial Statements' },
-        { id: 'audit', label: '🔒 Audit History', desc: 'Merkle Hash Chain' },
-        { id: 'recommendations', label: '💡 Advisor Insights', desc: 'Client Recommendations' },
-        { id: 'profile', label: '👤 Profile & Security', desc: 'Settings' }
+        { id: 'dashboard', label: '📊 Personal Command Center' },
+        { id: 'accounts', label: '🏦 My Bank Accounts' },
+        { id: 'transactions', label: '💳 Transaction Journal' },
+        { id: 'budgets', label: '🎯 My Monthly Budgets' },
+        { id: 'investments', label: '📈 Investment Portfolio' },
+        { id: 'taxes', label: '📑 Tax Estimation' },
+        { id: 'debt', label: '📉 Debt Payoff Plan' },
+        { id: 'health', label: '🩺 Financial Health' },
+        { id: 'compliance', label: '🛡️ Compliance Status' },
+        { id: 'reports', label: '📋 Financial Reports' },
+        { id: 'audit', label: '🔒 Merkle Audit Chain' },
+        { id: 'recommendations', label: '💡 Advisor Insights' },
+        { id: 'profile', label: '👤 Profile & Security' }
       ];
 
       const advisorItems = [
-        { id: 'dashboard', label: '📊 Client Dashboard', desc: 'Financial Overview' },
-        { id: 'accounts', label: '🏦 Client Accounts', desc: 'Read-Only View' },
-        { id: 'transactions', label: '💳 Transactions Audit', desc: 'Ledger Audit' },
-        { id: 'budgets', label: '🎯 Budget Analysis', desc: 'Spending Analysis' },
-        { id: 'investments', label: '📈 Investment Risk', desc: 'MPT & Stress Testing' },
-        { id: 'taxes', label: '📑 Tax Optimization', desc: 'Loss Harvesting Analysis' },
-        { id: 'debt', label: '📉 Debt Structure', desc: 'Amortization Audit' },
-        { id: 'health', label: '🩺 Health Metrics', desc: 'Client Health Score' },
-        { id: 'compliance', label: '🛡️ Compliance Status', desc: 'AML / Risk Screening' },
-        { id: 'reports', label: '📋 Financial Reports', desc: 'Client Statement Export' },
-        { id: 'recommendations', label: '💡 Recommendations', desc: 'Author Recommendations' },
-        { id: 'audit', label: '🔒 Audit Logs', desc: 'System Audit Chain' },
-        { id: 'profile', label: '👤 Advisor Profile', desc: 'Settings' }
+        { id: 'dashboard', label: '📊 Advisor Diagnostic Cockpit' },
+        { id: 'accounts', label: '🏦 Client Accounts (Audit)' },
+        { id: 'transactions', label: '💳 Transactions Ingestion' },
+        { id: 'budgets', label: '🎯 Budget Health & Drift' },
+        { id: 'investments', label: '📈 Risk Metrics & Stress Test' },
+        { id: 'taxes', label: '📑 Tax-Loss Harvesting Engine' },
+        { id: 'debt', label: '📉 Debt Structure & DTI' },
+        { id: 'health', label: '🩺 Client Health Matrix' },
+        { id: 'compliance', label: '🛡️ AML & Sanctions Monitor' },
+        { id: 'reports', label: '📋 Client Statement Generator' },
+        { id: 'recommendations', label: '💡 Advisory Recommendations' },
+        { id: 'audit', label: '🔒 Tamper-Proof Audit Log' },
+        { id: 'profile', label: '👤 Advisor Profile' }
       ];
 
       const items = isAdvisor ? advisorItems : ownerItems;
       items.forEach(item => {
         nav.innerHTML += `
-          <button onclick="navigateTo('${item.id}')" id="nav-${item.id}" class="w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-emerald-100 hover:bg-emerald-900/60 font-medium">
+          <button onclick="navigateTo('${item.id}')" id="nav-${item.id}" class="w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium">
             <span>${item.label}</span>
           </button>
         `;
@@ -548,30 +557,33 @@
     function navigateTo(pageId) {
       currentPage = pageId;
 
-      // Update Active Navigation Item
       document.querySelectorAll('#navMenu button').forEach(btn => {
-        btn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-emerald-200/80 hover:bg-emerald-900/60 font-medium';
+        btn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium';
       });
       const activeBtn = document.getElementById('nav-' + pageId);
       if (activeBtn) {
-        activeBtn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between bg-emerald-800 text-amber-300 font-bold shadow-sm';
+        activeBtn.className = 'w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between bg-slate-900 text-white font-bold shadow-sm';
       }
 
       document.getElementById('pageTitle').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1).replace('-', ' ');
-
-      // Render View
       renderPageView(pageId);
     }
 
     // -------------------------------------------------------------
-    // Page Rendering Engine (13 Working Views)
+    // Page Rendering Engine
     // -------------------------------------------------------------
     async function renderPageView(pageId) {
       const container = document.getElementById('pageContent');
       container.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Loading live financial data...</div>';
 
       try {
-        if (pageId === 'dashboard') await renderDashboardPage(container);
+        if (pageId === 'dashboard') {
+          if (currentUser.role === 'FINANCIAL_ADVISOR') {
+            await renderAdvisorDashboard(container);
+          } else {
+            await renderUserDashboard(container);
+          }
+        }
         else if (pageId === 'accounts') await renderAccountsPage(container);
         else if (pageId === 'transactions') await renderTransactionsPage(container);
         else if (pageId === 'budgets') await renderBudgetsPage(container);
@@ -589,127 +601,284 @@
       }
     }
 
-    // --- 1. Dashboard View ---
-    async function renderDashboardPage(container) {
-      const [nwRes, txRes, bRes, hRes, recRes] = await Promise.all([
+    // =========================================================================
+    // A. ACCOUNT OWNER (USER) DASHBOARD: Personal Command Center
+    // =========================================================================
+    async function renderUserDashboard(container) {
+      const [nwRes, txRes, bRes, hRes, alertRes] = await Promise.all([
         apiRequest('/api/net-worth'),
         apiRequest('/api/transactions'),
         apiRequest('/api/budgets'),
         apiRequest('/api/financial-health'),
-        apiRequest('/api/advisor/recommendations')
+        apiRequest('/api/advisor/alerts')
       ]);
 
       const nw = await nwRes.json();
       const txs = await txRes.json();
       const budgets = await bRes.json();
       const health = await hRes.json();
-      const recs = await recRes.json();
+      const alerts = await alertRes.json();
 
       container.innerHTML = `
-        <!-- Metrics Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Assets</span>
-            <p class="text-2xl font-black text-forest mt-1.5 font-mono">$${Number(nw.total_assets).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-[11px] text-slate-400 mt-0.5 block">Checking, Savings & Equities</span>
+        <!-- USER SPOTLIGHT: ADVISOR ALERTS & SMART SUGGESTIONS -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="text-base font-black text-slate-900">🔔 Advisor Alerts & Smart Suggestions</span>
+              <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-slate-100 text-slate-700 border border-slate-200">From Sarah Jenkins, CFP®</span>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">${alerts.filter(a => !a.is_acknowledged).length} active alerts requiring attention</span>
           </div>
 
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Liabilities</span>
-            <p class="text-2xl font-black text-rose-700 mt-1.5 font-mono">$${Number(nw.total_liabilities).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-[11px] text-slate-400 mt-0.5 block">Mortgage & Credit Balances</span>
-          </div>
-
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Net Worth Position</span>
-            <p class="text-2xl font-black text-gold mt-1.5 font-mono">$${Number(nw.net_worth).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">✓ Double-Entry Invariant Verified</span>
-          </div>
-
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Financial Health Score</span>
-            <p class="text-2xl font-black text-forest mt-1.5 font-mono">${health.overall_score} <span class="text-sm font-semibold text-slate-500">/ 100 (${health.grade})</span></p>
-            <span class="text-[11px] text-slate-400 mt-0.5 block">${health.pillars.emergency_fund.label}</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            ${alerts.map(a => {
+              const isCrit = a.severity === 'CRITICAL';
+              const isOpp = a.severity === 'OPPORTUNITY';
+              const badgeBg = isCrit ? 'bg-rose-50 text-rose-800 border-rose-200' : (isOpp ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200');
+              return `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 card-shadow space-y-2 flex flex-col justify-between ${a.is_acknowledged ? 'opacity-60 bg-slate-50' : ''}">
+                  <div class="space-y-1.5">
+                    <div class="flex justify-between items-start">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${badgeBg}">${a.severity}</span>
+                      ${a.impact_amount ? `<span class="text-xs font-mono font-bold text-slate-900">${a.impact_amount}</span>` : ''}
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-xs">${a.title}</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">${a.message}</p>
+                  </div>
+                  <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="acknowledgeAlert('${a.alert_id}')" class="text-[11px] font-bold ${a.is_acknowledged ? 'text-slate-400' : 'text-slate-900 hover:text-emerald-700'} transition">
+                      ${a.is_acknowledged ? '✓ Acknowledged' : 'Mark as Reviewed →'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
 
-        <!-- Charts Section -->
+        <!-- Metric Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Assets</span>
+            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">$${Number(nw.total_assets).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">Checking, Savings & Stocks</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Liabilities</span>
+            <p class="text-2xl font-black text-rose-700 mt-1.5 font-mono">$${Number(nw.total_liabilities).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">Mortgage & Credit Balance</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Net Worth</span>
+            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">$${Number(nw.net_worth).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">Total Assets minus Debts</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Financial Health</span>
+            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">${health.overall_score} <span class="text-sm font-semibold text-slate-400">/ 100</span></p>
+            <span class="text-[11px] text-emerald-700 font-bold mt-0.5 block">${health.grade} &bull; ${health.pillars.emergency_fund.label}</span>
+          </div>
+        </div>
+
+        <!-- Cash Flow & Budget Allocation Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 card-shadow">
             <div class="flex justify-between items-center mb-4">
-              <h3 class="font-black text-slate-900 text-sm">Monthly Cash Flow & Net Inflow</h3>
-              <span class="text-xs text-slate-500 font-mono">Income: $10,400.00 | Outflows: $2,753.49</span>
+              <h3 class="font-bold text-slate-900 text-sm">Monthly Cash Flow (Inflows vs Outflows)</h3>
+              <span class="text-xs text-slate-500 font-mono">Net Inflow: +$7,646.51/mo</span>
             </div>
             <div class="h-60">
-              <canvas id="cashflowChart"></canvas>
+              <canvas id="userCashflowChart"></canvas>
             </div>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow">
-            <h3 class="font-black text-slate-900 text-sm mb-4">Expense Distribution by Category</h3>
+            <h3 class="font-bold text-slate-900 text-sm mb-4">Monthly Expenses by Category</h3>
             <div class="h-60">
-              <canvas id="categoryDonutChart"></canvas>
+              <canvas id="userCategoryChart"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- Recent Transactions & Advisor Recommendations -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Recent Transactions -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="font-black text-slate-900 text-sm">Recent Ledger Transactions</h3>
-              <button onclick="navigateTo('transactions')" class="text-xs text-forest hover:underline font-bold">View All ↗</button>
-            </div>
-            <div class="divide-y divide-slate-100">
-              ${txs.slice(0, 5).map(t => `
-                <div class="py-3 flex items-center justify-between text-xs">
-                  <div>
-                    <p class="font-bold text-slate-900">${t.merchant_name}</p>
-                    <span class="text-slate-400">${t.date} &bull; ${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span>
-                  </div>
-                  <span class="font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
-                    ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
-                  </span>
-                </div>
-              `).join('')}
-            </div>
+        <!-- Recent Transactions Feed -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-slate-900 text-sm">Recent Ledger Activity</h3>
+            <button onclick="navigateTo('transactions')" class="text-xs text-slate-900 font-bold hover:underline">View Full Journal ↗</button>
           </div>
-
-          <!-- Active Recommendations -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="font-black text-slate-900 text-sm">Active Advisor Insights</h3>
-              <button onclick="navigateTo('recommendations')" class="text-xs text-forest hover:underline font-bold">Manage ↗</button>
-            </div>
-            <div class="space-y-3">
-              ${recs.slice(0, 2).map(r => `
-                <div class="p-3.5 bg-amber-50/70 border border-amber-200/70 rounded-xl space-y-1">
-                  <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-amber-900">${r.title}</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${r.priority === 'HIGH' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${r.priority}</span>
-                  </div>
-                  <p class="text-xs text-slate-700 leading-relaxed">${r.explanation}</p>
+          <div class="divide-y divide-slate-100">
+            ${txs.slice(0, 5).map(t => `
+              <div class="py-3 flex items-center justify-between text-xs">
+                <div>
+                  <p class="font-bold text-slate-900">${t.merchant_name}</p>
+                  <span class="text-slate-400">${t.date} &bull; ${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span>
                 </div>
-              `).join('')}
-            </div>
+                <span class="font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
+                  ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
+                </span>
+              </div>
+            `).join('')}
           </div>
         </div>
       `;
 
-      // Render Charts
-      initDashboardCharts(txs, budgets);
+      initUserCharts(txs, budgets);
     }
 
-    function initDashboardCharts(txs, budgets) {
-      const ctxCash = document.getElementById('cashflowChart').getContext('2d');
+    // =========================================================================
+    // B. FINANCIAL ADVISOR DASHBOARD: Institutional Diagnostic Cockpit
+    // =========================================================================
+    async function renderAdvisorDashboard(container) {
+      const [nwRes, invRes, healthRes, alertRes, stressRes, recRes] = await Promise.all([
+        apiRequest('/api/net-worth'),
+        apiRequest('/api/investments'),
+        apiRequest('/api/financial-health'),
+        apiRequest('/api/advisor/alerts'),
+        apiRequest('/api/advisor/stress-test'),
+        apiRequest('/api/advisor/recommendations')
+      ]);
+
+      const nw = await nwRes.json();
+      const inv = await invRes.json();
+      const health = await healthRes.json();
+      const alerts = await alertRes.json();
+      const stress = await stressRes.json();
+      const recs = await recRes.json();
+
+      container.innerHTML = `
+        <!-- Client Profile Diagnostic Banner -->
+        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm space-y-3">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Institutional Client Audit</span>
+              <h2 class="text-xl font-extrabold text-white">Alex Vance — Wealth & Risk Diagnostic Cockpit</h2>
+              <span class="text-xs text-slate-300">CFP® Certified Advisor: Sarah Jenkins &bull; Portfolio Strategy: Balanced Growth</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openModal('alertModal')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition">
+                🚨 Dispatch Direct Client Alert
+              </button>
+              <button onclick="openModal('recommendationModal')" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl transition">
+                💡 Add Recommendation
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advisor Diagnostic Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Client Net Liquidity</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$40,950.00</p>
+            <span class="text-[11px] text-emerald-700 font-semibold block">8.4 Months living expense reserve</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Risk-Adjusted Alpha (Sharpe)</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">${inv.metrics.sharpe_ratio} <span class="text-xs font-semibold text-slate-400">/ ${inv.metrics.sortino_ratio} (Sortino)</span></p>
+            <span class="text-[11px] text-slate-400 block">Strong excess return per unit risk</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Parametric 1-Day VaR (95%)</span>
+            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${inv.metrics.var_95_daily.toLocaleString()}</p>
+            <span class="text-[11px] text-slate-400 block">Maximum 95% single-day downside</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Debt-to-Income Exposure</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">22.8% <span class="text-xs font-semibold text-emerald-700 font-sans">✓ Safe Tier</span></p>
+            <span class="text-[11px] text-slate-400 block">Primary debt is low-rate mortgage</span>
+          </div>
+        </div>
+
+        <!-- Macroeconomic Stress Testing & Shock Diagnostics -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="font-extrabold text-slate-900 text-sm">Macroeconomic Shock & Stress Testing Matrix</h3>
+              <p class="text-xs text-slate-500">Real-time simulation of market crashes, stagflation, and central bank interest rate shocks on client balance sheet.</p>
+            </div>
+            <span class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">Overall Resilience: HIGH</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            ${stress.scenarios.map(s => `
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                <span class="text-xs font-bold text-slate-900 block">${s.name}</span>
+                <div class="text-xs space-y-1 font-mono">
+                  ${s.portfolio_impact ? `<p class="text-rose-700 font-bold">Estimated Impact: ${s.portfolio_impact}</p>` : ''}
+                  ${s.monthly_expense_increase ? `<p class="text-rose-700 font-bold">Cost Increase: ${s.monthly_expense_increase}</p>` : ''}
+                  ${s.savings_yield_gain ? `<p class="text-emerald-700 font-bold">Yield Gain: ${s.savings_yield_gain}</p>` : ''}
+                </div>
+                <div class="pt-2 border-t border-slate-200 text-xs text-slate-600">
+                  <span class="font-bold block text-[11px] uppercase text-slate-500">Advisory Action:</span>
+                  ${s.action_needed}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Active Client Recommendations & Issued Alerts Manager -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- Published Recommendations -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-slate-900 text-sm">Published Advisory Recommendations</h3>
+              <button onclick="openModal('recommendationModal')" class="text-xs text-slate-900 font-bold hover:underline">+ New ↗</button>
+            </div>
+            <div class="space-y-3">
+              ${recs.map(r => `
+                <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-900">${r.title}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${r.priority === 'HIGH' ? 'bg-rose-100 text-rose-800' : 'bg-slate-200 text-slate-800'}">${r.priority}</span>
+                  </div>
+                  <p class="text-xs text-slate-600 leading-relaxed">${r.explanation}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Dispatched Alerts Tracker -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-slate-900 text-sm">Client Alert Dispatcher History</h3>
+              <button onclick="openModal('alertModal')" class="text-xs text-rose-700 font-bold hover:underline">+ Dispatch Alert ↗</button>
+            </div>
+            <div class="space-y-3">
+              ${alerts.map(a => `
+                <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-900">${a.title}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${a.is_acknowledged ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                      ${a.is_acknowledged ? '✓ Reviewed by Client' : 'Pending Client Action'}
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-600">${a.message}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function initUserCharts(txs, budgets) {
+      const ctxCash = document.getElementById('userCashflowChart').getContext('2d');
       new Chart(ctxCash, {
         type: 'bar',
         data: {
           labels: ['March', 'April', 'May', 'June', 'July', 'August 2026'],
           datasets: [
-            { label: 'Gross Inflow ($)', data: [9800, 10200, 10400, 10400, 10400, 10400], backgroundColor: '#059669', borderRadius: 6 },
-            { label: 'Operating Expenses ($)', data: [2800, 3100, 2650, 2900, 2710, 2753], backgroundColor: '#d97706', borderRadius: 6 }
+            { label: 'My Gross Income ($)', data: [9800, 10200, 10400, 10400, 10400, 10400], backgroundColor: '#0f172a', borderRadius: 4 },
+            { label: 'My Total Spending ($)', data: [2800, 3100, 2650, 2900, 2710, 2753], backgroundColor: '#94a3b8', borderRadius: 4 }
           ]
         },
         options: {
@@ -718,19 +887,19 @@
           plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
           scales: {
             x: { grid: { display: false } },
-            y: { grid: { color: '#f1f5f9' }, ticks: { callback: v => '$' + v } }
+            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '$' + v } }
           }
         }
       });
 
-      const ctxDonut = document.getElementById('categoryDonutChart').getContext('2d');
+      const ctxDonut = document.getElementById('userCategoryChart').getContext('2d');
       new Chart(ctxDonut, {
         type: 'doughnut',
         data: {
           labels: budgets.map(b => b.category_name),
           datasets: [{
             data: budgets.map(b => b.spent),
-            backgroundColor: ['#064e3b', '#059669', '#10b981', '#d97706', '#f59e0b', '#3b82f6'],
+            backgroundColor: ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -756,11 +925,11 @@
             <p class="text-xs text-slate-500">Real-time aggregated ledger accounts across deposit, credit, and investment lines.</p>
           </div>
           ${isOwner ? `
-            <button onclick="openModal('accountModal')" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+            <button onclick="openModal('accountModal')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
               + Register Account
             </button>
           ` : `
-            <span class="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold">Advisor Mode (Read-Only)</span>
+            <span class="text-xs text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold">Advisor Mode (Read-Only)</span>
           `}
         </div>
 
@@ -779,7 +948,7 @@
                 <div class="pt-2 border-t border-slate-100 flex justify-between items-end">
                   <div>
                     <span class="text-[10px] text-slate-400 uppercase font-semibold">Current Balance</span>
-                    <p class="text-xl font-black font-mono ${isDebt ? 'text-rose-700' : 'text-forest'}">
+                    <p class="text-xl font-black font-mono ${isDebt ? 'text-rose-700' : 'text-slate-900'}">
                       $${Math.abs(a.current_balance).toLocaleString('en-US', {minimumFractionDigits: 2})}
                     </p>
                   </div>
@@ -791,7 +960,6 @@
         </div>
       `;
 
-      // Update tx modal account select dropdown
       const sel = document.getElementById('txAccountSelect');
       if (sel) {
         sel.innerHTML = accounts.map(a => `<option value="${a.account_id}">${a.account_name} ($${a.current_balance.toFixed(2)})</option>`).join('');
@@ -815,7 +983,7 @@
               ⬇ Export CSV
             </button>
             ${isOwner ? `
-              <button onclick="openModal('txModal')" class="px-4 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              <button onclick="openModal('txModal')" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
                 + Post Transaction
               </button>
             ` : ''}
@@ -866,10 +1034,10 @@
             <p class="text-xs text-slate-500">Monthly envelope tracking with automated rollover and variance monitoring.</p>
           </div>
           ${isOwner ? `
-            <button onclick="promptEditBudgets()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+            <button onclick="promptEditBudgets()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
               ✏️ Adjust Allocations
             </button>
-          ` : '<span class="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold">Advisor Analysis Mode</span>'}
+          ` : '<span class="text-xs text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl font-bold">Advisor Analysis Mode</span>'}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -879,10 +1047,10 @@
               <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow space-y-3">
                 <div class="flex justify-between items-center">
                   <h3 class="font-bold text-slate-900 text-sm">${b.category_name}</h3>
-                  <span class="text-xs font-mono font-bold ${isOver ? 'text-rose-700' : 'text-forest'}">${b.percentage_spent.toFixed(1)}%</span>
+                  <span class="text-xs font-mono font-bold ${isOver ? 'text-rose-700' : 'text-slate-900'}">${b.percentage_spent.toFixed(1)}%</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="h-full transition-all ${isOver ? 'bg-rose-500' : 'bg-emerald-600'}" style="width: ${Math.min(100, b.percentage_spent)}%"></div>
+                  <div class="h-full transition-all ${isOver ? 'bg-rose-500' : 'bg-slate-900'}" style="width: ${Math.min(100, b.percentage_spent)}%"></div>
                 </div>
                 <div class="flex justify-between text-xs text-slate-500 font-mono pt-1">
                   <span>Spent: $${b.spent.toFixed(2)}</span>
@@ -908,34 +1076,32 @@
             <p class="text-xs text-slate-500">Asset allocation, Modern Portfolio Theory (MPT) metrics, and 10,000-path Monte Carlo simulations.</p>
           </div>
           ${isOwner ? `
-            <button onclick="promptAddHolding()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+            <button onclick="promptAddHolding()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
               + Add Security Holding
             </button>
           ` : ''}
         </div>
 
-        <!-- MPT Metrics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[10px] font-bold uppercase text-slate-500">Total Portfolio Value</span>
-            <p class="text-2xl font-black text-forest mt-1 font-mono">$${data.total_portfolio_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <span class="text-[10px] font-bold uppercase text-slate-400">Total Portfolio Value</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.total_portfolio_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
             <span class="text-xs text-emerald-700 font-bold font-mono">+$${data.total_unrealized_gain.toLocaleString()} (+${data.unrealized_gain_pct}%)</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[10px] font-bold uppercase text-slate-500">Sharpe / Sortino Ratio</span>
-            <p class="text-2xl font-black text-gold mt-1 font-mono">${data.metrics.sharpe_ratio} / ${data.metrics.sortino_ratio}</p>
-            <span class="text-xs text-slate-400">Risk-Adjusted Excess Alpha</span>
+            <span class="text-[10px] font-bold uppercase text-slate-400">Sharpe / Sortino Ratio</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">${data.metrics.sharpe_ratio} / ${data.metrics.sortino_ratio}</p>
+            <span class="text-xs text-slate-400">Risk-Adjusted Alpha</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-            <span class="text-[10px] font-bold uppercase text-slate-500">Daily Value at Risk (95% VaR)</span>
+            <span class="text-[10px] font-bold uppercase text-slate-400">Daily Value at Risk (95% VaR)</span>
             <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.metrics.var_95_daily.toLocaleString()}</p>
-            <span class="text-xs text-slate-400">Parametric Maximum 1-Day Loss</span>
+            <span class="text-xs text-slate-400">Maximum 1-Day Downside</span>
           </div>
         </div>
 
-        <!-- Holdings Table -->
         <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
           <table class="w-full text-left text-xs text-slate-800">
             <thead class="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500">
@@ -967,14 +1133,13 @@
           </table>
         </div>
 
-        <!-- Interactive Monte Carlo Simulator -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-6">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="font-black text-slate-900 text-base">Stochastic Monte Carlo Wealth Engine</h3>
-              <p class="text-xs text-slate-500">10,000-Path Geometric Brownian Motion wealth trajectory forecast.</p>
+              <h3 class="font-bold text-slate-900 text-base">Stochastic Monte Carlo Simulation</h3>
+              <p class="text-xs text-slate-500">10,000-Path Geometric Brownian Motion wealth forecast.</p>
             </div>
-            <button onclick="runCustomMonteCarlo()" class="px-4 py-2 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+            <button onclick="runCustomMonteCarlo()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
               ⚡ Run 10k Simulation
             </button>
           </div>
@@ -1032,8 +1197,8 @@
           labels: labels,
           datasets: [
             { label: '90th Percentile (Optimistic)', data: data.percentile_trajectory.p90, borderColor: '#059669', tension: 0.2, pointRadius: 0 },
-            { label: '50th Percentile (Median Expected)', data: data.percentile_trajectory.p50_median, borderColor: '#064e3b', borderWidth: 3, tension: 0.2, pointRadius: 0 },
-            { label: '10th Percentile (Conservative)', data: data.percentile_trajectory.p10, borderColor: '#d97706', tension: 0.2, pointRadius: 0 }
+            { label: '50th Percentile (Median Expected)', data: data.percentile_trajectory.p50_median, borderColor: '#0f172a', borderWidth: 2.5, tension: 0.2, pointRadius: 0 },
+            { label: '10th Percentile (Conservative)', data: data.percentile_trajectory.p10, borderColor: '#94a3b8', tension: 0.2, pointRadius: 0 }
           ]
         },
         options: {
@@ -1042,7 +1207,7 @@
           plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
           scales: {
             x: { grid: { display: false } },
-            y: { grid: { color: '#f1f5f9' }, ticks: { callback: v => '$' + (v>=1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
+            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '$' + (v>=1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
           }
         }
       });
@@ -1062,32 +1227,32 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Federal Estimated Liability</span>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Federal Estimated Liability</span>
               <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.federal_estimated_tax.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
               <span class="text-xs text-slate-400 font-mono">Effective Rate: ${data.effective_federal_rate_pct}%</span>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">State Marginal Rate (${data.state_tax.state})</span>
-              <p class="text-2xl font-black text-forest mt-1 font-mono">${(data.state_tax.marginal_rate * 100).toFixed(2)}%</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">State Marginal Rate (${data.state_tax.state})</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">${(data.state_tax.marginal_rate * 100).toFixed(2)}%</p>
               <span class="text-xs text-slate-400 font-mono">State Liability: $${(data.state_tax.total_tax_cents/100).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Tax-Loss Harvesting Opportunity</span>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Tax-Loss Harvesting Opportunity</span>
               <p class="text-2xl font-black text-emerald-700 mt-1 font-mono">$720.00</p>
               <span class="text-xs text-emerald-800 font-semibold">✓ IRS 30-Day Wash-Sale Safe</span>
             </div>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
-            <h3 class="font-black text-slate-900 text-sm">Automated Tax-Loss Harvest Recommendations</h3>
-            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
-              <div class="flex justify-between items-center text-xs font-bold text-emerald-900">
+            <h3 class="font-bold text-slate-900 text-sm">Automated Tax-Loss Harvest Recommendations</h3>
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <div class="flex justify-between items-center text-xs font-bold text-slate-900">
                 <span>Security: BND (Vanguard Total Bond Market)</span>
                 <span>Harvestable Loss: $720.00</span>
               </div>
-              <p class="text-xs text-slate-700 leading-relaxed">
+              <p class="text-xs text-slate-600 leading-relaxed">
                 Recommended replacement security: <strong>AGG (iShares Core US Aggregate Bond)</strong>. Harvesting this position offsets realized capital gains without triggering the IRS 30-day wash-sale rule.
               </p>
             </div>
@@ -1111,24 +1276,24 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Total Debt Burden</span>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Total Debt Burden</span>
               <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.total_debt_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
               <span class="text-xs text-slate-400 font-mono">DTI Ratio: ${data.debt_to_income_ratio_pct}%</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Monthly Minimum Required</span>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Monthly Minimum Required</span>
               <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.total_monthly_minimum.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
               <span class="text-xs text-slate-400">Scheduled Outflows</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Avalanche Payoff Priority</span>
-              <p class="text-lg font-black text-forest mt-1 truncate">Credit Card (22.4%)</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Avalanche Payoff Priority</span>
+              <p class="text-lg font-black text-slate-900 mt-1 truncate">Credit Card (22.4%)</p>
               <span class="text-xs text-emerald-700 font-semibold">Saves $325.00 Interest</span>
             </div>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
-            <h3 class="font-black text-slate-900 text-sm">Active Debt Schedules</h3>
+            <h3 class="font-bold text-slate-900 text-sm">Active Debt Schedules</h3>
             <div class="divide-y divide-slate-100">
               ${data.debts.map(d => `
                 <div class="py-3.5 flex justify-between items-center text-xs">
@@ -1160,9 +1325,9 @@
             <p class="text-xs text-slate-500">5-Pillar quantitative assessment evaluating savings rate, liquidity, debt, and diversification.</p>
           </div>
 
-          <div class="bg-white border border-slate-200 rounded-3xl p-8 card-shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div class="bg-white border border-slate-200 rounded-2xl p-8 card-shadow flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="space-y-2">
-              <span class="text-xs font-bold text-forest uppercase tracking-wider">Overall Financial Score</span>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Overall Financial Score</span>
               <h1 class="text-5xl font-black text-slate-900 font-mono">${data.overall_score} <span class="text-xl text-slate-400 font-normal">/ 100</span></h1>
               <p class="text-sm font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl inline-block">
                 Grade: ${data.grade} &bull; Status: ${data.status}
@@ -1180,10 +1345,10 @@
               <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow space-y-2">
                 <div class="flex justify-between items-center text-xs">
                   <span class="font-bold text-slate-700 capitalize">${k.replace('_', ' ')}</span>
-                  <span class="font-mono font-bold text-forest">${p.score} / ${p.max}</span>
+                  <span class="font-mono font-bold text-slate-900">${p.score} / ${p.max}</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div class="bg-forest h-full" style="width: ${(p.score/p.max)*100}%"></div>
+                  <div class="bg-slate-900 h-full" style="width: ${(p.score/p.max)*100}%"></div>
                 </div>
                 <span class="text-[11px] text-slate-500 block">${p.label}</span>
               </div>
@@ -1207,26 +1372,26 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">KYC Verification Tier</span>
-              <p class="text-lg font-black text-forest mt-1">${data.kyc_status}</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">KYC Verification Tier</span>
+              <p class="text-lg font-black text-slate-900 mt-1">${data.kyc_status}</p>
               <span class="text-xs text-slate-400">CIP Identification Verified</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Risk Profile Rating</span>
-              <p class="text-lg font-black text-forest mt-1">${data.risk_tier}</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Risk Profile Rating</span>
+              <p class="text-lg font-black text-slate-900 mt-1">${data.risk_tier}</p>
               <span class="text-xs text-slate-400">Annual AML Risk Review</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-500">Sanctions Watchlist</span>
-              <p class="text-lg font-black text-forest mt-1">PASSED / CLEAR</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Sanctions Watchlist</span>
+              <p class="text-lg font-black text-emerald-700 mt-1">PASSED / CLEAR</p>
               <span class="text-xs text-slate-400">OFAC SDN Zero Matches</span>
             </div>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-3">
-            <h3 class="font-black text-slate-900 text-sm">FinCEN Structuring & CTR Monitor</h3>
+            <h3 class="font-bold text-slate-900 text-sm">FinCEN Structuring & CTR Monitor</h3>
             <p class="text-xs text-slate-600">
-              Evaluated 8 posted transactions against the $10,000.00 CTR threshold. No suspicious structuring or smurfing patterns detected.
+              Evaluated posted transactions against the $10,000.00 CTR threshold. No suspicious structuring or smurfing patterns detected.
             </p>
           </div>
         </div>
@@ -1249,7 +1414,7 @@
               <button onclick="downloadCSV('accounts')" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition">
                 ⬇ Accounts CSV
               </button>
-              <button onclick="downloadCSV('transactions')" class="px-3 py-1.5 bg-forest hover:bg-forest-dark text-white text-xs font-bold rounded-xl shadow transition">
+              <button onclick="downloadCSV('transactions')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
                 ⬇ Transactions CSV
               </button>
             </div>
@@ -1257,13 +1422,13 @@
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-              <h3 class="font-black text-slate-900 text-sm">GAAP Balance Sheet Position</h3>
+              <h3 class="font-bold text-slate-900 text-sm">GAAP Balance Sheet Position</h3>
               <span class="text-xs text-slate-400 font-mono">As of ${data.generated_at}</span>
             </div>
 
             <div class="grid grid-cols-2 gap-8 text-xs">
               <div class="space-y-3">
-                <span class="font-bold text-forest uppercase tracking-wider block">Total Assets</span>
+                <span class="font-bold text-slate-900 uppercase tracking-wider block">Total Assets</span>
                 <div class="space-y-2 font-mono">
                   ${data.accounts.filter(a => a.balance > 0).map(a => `
                     <div class="flex justify-between">
@@ -1350,7 +1515,7 @@
               <p class="text-xs text-slate-500">Structured analytical guidance published by assigned Certified Financial Planner.</p>
             </div>
             ${isAdvisor ? `
-              <button onclick="openModal('recommendationModal')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow transition">
+              <button onclick="openModal('recommendationModal')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
                 + Author Recommendation
               </button>
             ` : ''}
@@ -1361,12 +1526,12 @@
               <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-2">
                 <div class="flex justify-between items-center">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-black text-slate-900">${r.title}</span>
+                    <span class="text-xs font-bold text-slate-900">${r.title}</span>
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${r.category}</span>
                   </div>
-                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${r.priority === 'HIGH' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">${r.priority}</span>
+                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${r.priority === 'HIGH' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-slate-100 text-slate-800 border border-slate-200'}">${r.priority}</span>
                 </div>
-                <p class="text-xs text-slate-700 leading-relaxed">${r.explanation}</p>
+                <p class="text-xs text-slate-600 leading-relaxed">${r.explanation}</p>
                 <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex justify-between">
                   <span>Author: ${r.advisor_name}</span>
                   <span>Date: ${r.date}</span>
@@ -1399,7 +1564,7 @@
               </div>
               <div>
                 <span class="text-slate-400 block font-semibold">Assigned System Role</span>
-                <p class="font-bold text-forest text-sm">${currentUser.role.replace('_', ' ')}</p>
+                <p class="font-bold text-slate-900 text-sm">${currentUser.role.replace('_', ' ')}</p>
               </div>
             </div>
 
@@ -1414,7 +1579,7 @@
     }
 
     // -------------------------------------------------------------
-    // Action Submissions (Accounts, Transactions, Budgets, Recs)
+    // Action Submissions
     // -------------------------------------------------------------
     async function submitNewAccount() {
       const name = document.getElementById('accName').value;
@@ -1458,6 +1623,34 @@
       } else {
         showToast(data.error || 'Failed to post transaction', 'error');
       }
+    }
+
+    async function submitNewAlert() {
+      const severity = document.getElementById('alertSeverity').value;
+      const title = document.getElementById('alertTitle').value;
+      const impact = document.getElementById('alertImpact').value;
+      const message = document.getElementById('alertMessage').value;
+
+      if (!title || !message) {
+        showToast('Please provide alert headline and message', 'error');
+        return;
+      }
+
+      const res = await apiRequest('/api/advisor/alerts', 'POST', { severity, title, impact_amount: impact, message });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('alertModal');
+        showToast('Live Alert Dispatched to Client Dashboard!');
+        renderPageView(currentPage);
+      } else {
+        showToast(data.error || 'Failed to dispatch alert', 'error');
+      }
+    }
+
+    async function acknowledgeAlert(alertId) {
+      await apiRequest('/api/advisor/alerts/acknowledge', 'POST', { alert_id: alertId });
+      showToast('Alert marked as reviewed!');
+      renderPageView(currentPage);
     }
 
     async function submitNewRecommendation() {
@@ -1527,7 +1720,6 @@
       window.open(`/api/reports/export-csv?type=${type}`, '_blank');
     }
 
-    // Auto bootstrap on window load
     window.onload = bootstrapApp;
   </script>
 </body>

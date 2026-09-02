@@ -1,221 +1,167 @@
 """
-Advisor Recommendations, Financial Alerts & Stress-Testing Service.
-Allows Financial Advisors to dispatch prioritized alerts, structured recommendations,
-and macroeconomic stress-test diagnostics to assigned clients.
+Financial Advisor Recommendation Engine & Direct Client Alert Dispatcher (INR).
+Enables certified financial advisors to analyze client portfolios, macroeconomic risks,
+and publish structured alerts and actionable guidance in Indian Rupees (₹).
 """
 
+from typing import List, Dict, Any, Optional
+from dataclasses import dataclass, field
 import time
 import uuid
-from typing import List, Dict, Optional, Any
-from dataclasses import dataclass, field, asdict
 
 
 @dataclass
 class FinancialAlert:
     alert_id: str
-    client_id: str
-    advisor_id: str
-    advisor_name: str
-    severity: str  # CRITICAL, WARNING, OPPORTUNITY
+    severity: str # 'CRITICAL', 'WARNING', 'OPPORTUNITY'
     title: str
     message: str
     impact_amount: Optional[str] = None
-    action_label: str = "Review Action Plan"
+    created_at: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S IST"))
     is_acknowledged: bool = False
-    created_at: float = field(default_factory=time.time)
-
-
-@dataclass
-class RecommendationItem:
-    rec_id: str
-    client_id: str
-    advisor_id: str
-    advisor_name: str
-    title: str
-    category: str  # Budget, Investment, Debt, Savings, Tax, General
-    explanation: str
-    priority: str  # HIGH, MEDIUM, LOW
-    date: str
-    is_reviewed: bool = False
-    created_at: float = field(default_factory=time.time)
+    advisor_id: str = "usr_advisor_01"
+    client_id: str = "usr_owner_01"
 
 
 class AdvisorRecommendationsService:
-    """
-    Manages the lifecycle of client recommendations, urgent alerts, and stress testing.
-    """
+    """Manages advisor analysis, macroeconomic stress tests, and alert dispatches in INR."""
 
-    def __init__(self):
-        self._recommendations: Dict[str, RecommendationItem] = {}
-        self._alerts: Dict[str, FinancialAlert] = {}
-        self._init_demo_data()
+    _alerts: List[FinancialAlert] = [
+        FinancialAlert(
+            alert_id="alt_01",
+            severity="CRITICAL",
+            title="High-Interest Credit Card Drag",
+            impact_amount="-₹18,500/yr Interest Burn",
+            message="Your HDFC Regalia balance carries a 42.0% APR. Immediate repayment using idle savings will guarantee a risk-free savings of ₹18,500.00 per year.",
+            created_at="2026-09-02 08:30:00 IST",
+            is_acknowledged=False
+        ),
+        FinancialAlert(
+            alert_id="alt_02",
+            severity="OPPORTUNITY",
+            title="Tax-Loss Harvesting Available",
+            impact_amount="+₹35,000 Offset",
+            message="Short-term capital gains can be offset by harvesting ₹35,000.00 unrealized loss in Debt ETF before financial year close.",
+            created_at="2026-09-02 08:35:00 IST",
+            is_acknowledged=False
+        ),
+        FinancialAlert(
+            alert_id="alt_03",
+            severity="WARNING",
+            title="Cash Drag in Savings Account",
+            impact_amount="₹1,50,000 Excess Cash",
+            message="You have ₹1,50,000.00 in low-yield savings exceeding your 6-month emergency buffer. Reallocating to Arbitrage or Liquid Funds will generate ~7.2% tax-efficient yield.",
+            created_at="2026-09-02 08:40:00 IST",
+            is_acknowledged=False
+        )
+    ]
 
-    def _init_demo_data(self):
-        # Initial Alerts
-        alerts = [
-            FinancialAlert(
-                alert_id="alt_001",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                severity="CRITICAL",
-                title="High-Interest Debt Drag Alert",
-                message="Sapphire Preferred balance ($1,450.00) is accumulating 22.40% APR interest charges. Paying this off immediately using surplus checking cash will save $325.00/yr.",
-                impact_amount="-$325/yr Interest Burn",
-                action_label="Pay Off Balance"
-            ),
-            FinancialAlert(
-                alert_id="alt_002",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                severity="OPPORTUNITY",
-                title="Tax-Loss Harvesting Window Open",
-                message="Unrealized loss of $720.00 in BND can be harvested and rotated into AGG to offset ordinary capital gains with zero wash-sale penalty.",
-                impact_amount="+$150 Tax Reduction",
-                action_label="Execute Harvest"
-            ),
-            FinancialAlert(
-                alert_id="alt_003",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                severity="WARNING",
-                title="Cash Drag & Inflation Drag",
-                message="Marcus savings balance ($32,500.00) exceeds your 6-month emergency reserve ($16,520.00). Deploying $10,000 into diversified index funds is recommended.",
-                impact_amount="$15,980 Excess Liquidity",
-                action_label="Allocate Funds"
-            )
+    _recommendations: List[Dict[str, Any]] = [
+        {
+            "rec_id": "rec_01",
+            "title": "Maximize Section 80C & NPS Tier-1 Contributions",
+            "category": "Tax & Retirement",
+            "priority": "HIGH",
+            "explanation": "Deploy ₹1,50,000 in ELSS equity tax-saving funds and ₹50,000 in NPS Section 80CCD(1B) to reduce taxable income by ₹2,00,000 in the old regime.",
+            "advisor_name": "Sarah Jenkins, CFP®",
+            "date": "2026-09-01"
+        },
+        {
+            "rec_id": "rec_02",
+            "title": "Accelerate Home Loan Prepayment via Annual Bonus",
+            "category": "Debt Strategy",
+            "priority": "MEDIUM",
+            "explanation": "Making 1 extra EMI payment per year on your SBI Home Loan (8.50% floating) reduces total loan tenure from 20 years to 16.4 years, saving over ₹6,80,000 in interest.",
+            "advisor_name": "Sarah Jenkins, CFP®",
+            "date": "2026-08-28"
+        },
+        {
+            "rec_id": "rec_03",
+            "title": "Automate Monthly SIP in Nifty 50 & Midcap Indices",
+            "category": "Wealth Building",
+            "priority": "HIGH",
+            "explanation": "Maintain an automated ₹50,000 monthly SIP split 60:40 across Nifty 50 Index and Nifty Midcap 150 Index for long-term compound alpha.",
+            "advisor_name": "Sarah Jenkins, CFP®",
+            "date": "2026-08-25"
+        }
+    ]
+
+    @classmethod
+    def get_active_alerts(cls, client_id: str) -> List[Dict[str, Any]]:
+        return [
+            {
+                "alert_id": a.alert_id,
+                "severity": a.severity,
+                "title": a.title,
+                "message": a.message,
+                "impact_amount": a.impact_amount,
+                "created_at": a.created_at,
+                "is_acknowledged": a.is_acknowledged
+            }
+            for a in cls._alerts if a.client_id == client_id
         ]
-        for a in alerts:
-            self._alerts[a.alert_id] = a
 
-        # Initial Recommendations
-        recs = [
-            RecommendationItem(
-                rec_id="rec_001",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                title="Optimize High-Yield Cash Allocation into Broad Equities",
-                category="Investment",
-                explanation="Your emergency fund currently holds $32,500 across Marcus savings (approx. 8.4 months of living expenses). We recommend deploying $10,000 into dollar-cost averaged low-cost broad index ETFs (e.g. VOO or VTI) to enhance long-term compounding.",
-                priority="MEDIUM",
-                date="2026-08-28"
-            ),
-            RecommendationItem(
-                rec_id="rec_002",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                title="Execute Tax-Loss Harvest on Fixed-Income Holdings",
-                category="Tax",
-                explanation="Identified an unrealized loss of $720.00 in BND (Total Bond Market). We recommend harvesting this capital loss and rotating into AGG to offset ordinary taxable income while adhering to the IRS 30-day wash-sale rule.",
-                priority="HIGH",
-                date="2026-08-30"
-            ),
-            RecommendationItem(
-                rec_id="rec_003",
-                client_id="usr_owner_01",
-                advisor_id="usr_advisor_01",
-                advisor_name="Sarah Jenkins, CFP®",
-                title="Accelerate Credit Card Payoff via Avalanche Method",
-                category="Debt",
-                explanation="Sapphire Preferred balance stands at $1,450 at 22.4% APR. Paying off this balance in full will eliminate unnecessary interest charges and immediately improve your liquidity score.",
-                priority="HIGH",
-                date="2026-08-31"
-            )
-        ]
-        for r in recs:
-            self._recommendations[r.rec_id] = r
-
-    def get_client_alerts(self, client_id: str) -> List[Dict[str, Any]]:
-        alerts = [asdict(a) for a in self._alerts.values() if a.client_id == client_id]
-        return sorted(alerts, key=lambda x: x["created_at"], reverse=True)
-
-    def add_alert(
-        self,
-        client_id: str,
-        advisor_id: str,
-        advisor_name: str,
-        title: str,
-        message: str,
-        severity: str = "WARNING",
-        impact_amount: Optional[str] = None
-    ) -> Dict[str, Any]:
-        alert = FinancialAlert(
-            alert_id=f"alt_{str(uuid.uuid4())[:8]}",
-            client_id=client_id,
-            advisor_id=advisor_id,
-            advisor_name=advisor_name,
+    @classmethod
+    def create_alert(cls, advisor_id: str, client_id: str, severity: str, title: str, message: str, impact_amount: Optional[str] = None) -> Dict[str, Any]:
+        new_alert = FinancialAlert(
+            alert_id=f"alt_{uuid.uuid4().hex[:6]}",
             severity=severity,
             title=title,
             message=message,
-            impact_amount=impact_amount
+            impact_amount=impact_amount,
+            advisor_id=advisor_id,
+            client_id=client_id
         )
-        self._alerts[alert.alert_id] = alert
-        return asdict(alert)
+        cls._alerts.insert(0, new_alert)
+        return {"alert_id": new_alert.alert_id, "status": "DISPATCHED"}
 
-    def acknowledge_alert(self, alert_id: str, client_id: str) -> bool:
-        alert = self._alerts.get(alert_id)
-        if alert and alert.client_id == client_id:
-            alert.is_acknowledged = True
-            return True
+    @classmethod
+    def acknowledge_alert(cls, alert_id: str) -> bool:
+        for a in cls._alerts:
+            if a.alert_id == alert_id:
+                a.is_acknowledged = True
+                return True
         return False
 
-    def get_client_recommendations(self, client_id: str) -> List[Dict[str, Any]]:
-        recs = [asdict(r) for r in self._recommendations.values() if r.client_id == client_id]
-        return sorted(recs, key=lambda x: x["created_at"], reverse=True)
+    @classmethod
+    def get_recommendations(cls, client_id: str) -> List[Dict[str, Any]]:
+        return cls._recommendations
 
-    def add_recommendation(
-        self,
-        client_id: str,
-        advisor_id: str,
-        advisor_name: str,
-        title: str,
-        category: str,
-        explanation: str,
-        priority: str = "MEDIUM"
-    ) -> Dict[str, Any]:
-        rec = RecommendationItem(
-            rec_id=f"rec_{str(uuid.uuid4())[:8]}",
-            client_id=client_id,
-            advisor_id=advisor_id,
-            advisor_name=advisor_name,
-            title=title,
-            category=category,
-            explanation=explanation,
-            priority=priority,
-            date=time.strftime("%Y-%m-%d")
-        )
-        self._recommendations[rec.rec_id] = rec
-        return asdict(rec)
+    @classmethod
+    def add_recommendation(cls, advisor_name: str, title: str, category: str, priority: str, explanation: str) -> Dict[str, Any]:
+        rec = {
+            "rec_id": f"rec_{uuid.uuid4().hex[:6]}",
+            "title": title,
+            "category": category,
+            "priority": priority,
+            "explanation": explanation,
+            "advisor_name": advisor_name,
+            "date": time.strftime("%Y-%m-%d")
+        }
+        cls._recommendations.insert(0, rec)
+        return rec
 
-    def get_stress_test_analysis(self, client_id: str) -> Dict[str, Any]:
-        """Calculates macroeconomic shock resistance for the client portfolio."""
+    @classmethod
+    def get_stress_test_analysis(cls, client_id: str) -> Dict[str, Any]:
         return {
             "client_id": client_id,
+            "simulated_at": time.strftime("%Y-%m-%d %H:%M:%S IST"),
+            "resilience_grade": "HIGH",
             "scenarios": [
                 {
-                    "name": "Market Drawdown Shock (-20% Equities)",
-                    "portfolio_impact": "-$16,190.40",
-                    "post_shock_value": "$78,009.60",
-                    "resilience_status": "STRONG_BUFFER",
-                    "action_needed": "Rebalance fixed income into equities at trough."
+                    "name": "Equity Market Correction (-20% Domestic Equities)",
+                    "portfolio_impact": "-₹1,88,400.00",
+                    "action_needed": "Portfolio retains 8.4 months of net cash reserve. No panic liquidation needed; initiate tactical rebalancing into Large-Cap Equities."
                 },
                 {
-                    "name": "Stagflation Shock (+5% Inflation & Cost of Living)",
-                    "monthly_expense_increase": "+$137.67/mo",
-                    "revised_savings_rate": "72.2%",
-                    "resilience_status": "HIGHLY_RESILIENT",
-                    "action_needed": "Allocate 5% into TIPS or commodities."
+                    "name": "Stagflation Shock (+6.5% CPI Inflation)",
+                    "monthly_expense_increase": "+₹4,800.00/mo",
+                    "action_needed": "Current monthly savings rate (73.5%) easily absorbs cost of living shock without tapping debt."
                 },
                 {
-                    "name": "Interest Rate Hike (+200 bps)",
-                    "impact": "Fixed mortgage locked at 5.85%; Zero payment change.",
-                    "savings_yield_gain": "+$650.00/yr additional HYSA interest",
-                    "resilience_status": "BENEFICIARY",
-                    "action_needed": "Maintain high-yield cash sweep."
+                    "name": "RBI Rate Hike (+150 bps Repo Rate)",
+                    "savings_yield_gain": "+₹6,500.00/yr",
+                    "action_needed": "Fixed deposits and liquid funds yield higher returns. Floating home loan EMI should be partially prepaid."
                 }
             ]
         }

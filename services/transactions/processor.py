@@ -96,5 +96,27 @@ class TransactionProcessor:
 
         return successful, errors
 
+    def record_transaction(
+        self,
+        account_id: str,
+        merchant_name: str,
+        amount_cents: int,
+        raw_description: str,
+        category_id: str,
+        date: str
+    ) -> TransactionEntity:
+        acc = self.account_manager.get_account(account_id)
+        user_id = acc.user_id if acc else "usr_owner_01"
+        return self.process_transaction(
+            account_id=account_id,
+            user_id=user_id,
+            amount_cents=amount_cents,
+            date=date,
+            merchant_name=merchant_name,
+            raw_description=raw_description,
+            category_id=category_id,
+            allow_duplicates=True
+        )
+
     def get_user_transactions(self, user_id: str) -> List[TransactionEntity]:
         return [tx for tx in self._transactions.values() if tx.user_id == user_id]

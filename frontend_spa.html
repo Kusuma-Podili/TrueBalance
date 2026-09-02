@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrueBalance — Enterprise Wealth Intelligence & Ledger</title>
+  <title>TrueBalance — Enterprise Wealth Intelligence & Ledger (INR ₹)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,10 +36,10 @@
       <!-- Brand Header -->
       <div class="text-center space-y-2">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-900 text-white font-extrabold text-xl shadow-sm">
-          TB
+          ₹
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 mt-2">TRUEBALANCE</h1>
-        <p class="text-xs text-slate-500 font-medium">Wealth Intelligence & Financial Management</p>
+        <p class="text-xs text-slate-500 font-medium">Wealth Intelligence & Financial Management (INR)</p>
       </div>
 
       <!-- Demo Account Quick Selectors -->
@@ -98,17 +98,17 @@
   <!-- ========================================================================= -->
   <div id="appShell" class="hidden min-h-screen flex flex-col md:flex-row bg-white">
     
-    <!-- Left Navigation Sidebar (Pure White Minimal) -->
+    <!-- Left Navigation Sidebar -->
     <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0">
       <div>
         <!-- App Branding -->
         <div class="p-6 border-b border-slate-100 flex items-center gap-3">
           <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-black text-base flex items-center justify-center shadow-sm">
-            TB
+            ₹
           </div>
           <div>
             <h2 class="font-extrabold text-base tracking-tight leading-none text-slate-900">TrueBalance</h2>
-            <span class="text-[11px] text-slate-400 font-medium">Wealth Platform</span>
+            <span class="text-[11px] text-slate-400 font-medium">Wealth Platform (INR)</span>
           </div>
         </div>
 
@@ -197,26 +197,26 @@
       <div class="space-y-3">
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Account Nickname</label>
-          <input type="text" id="accName" placeholder="e.g. Schwab High-Yield Savings" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+          <input type="text" id="accName" placeholder="e.g. HDFC Salary Account" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Financial Institution</label>
-          <input type="text" id="accInst" placeholder="e.g. Charles Schwab, Chase, Fidelity" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+          <input type="text" id="accInst" placeholder="e.g. HDFC Bank, ICICI Bank, SBI, Zerodha" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Account Classification</label>
           <select id="accType" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
-            <option value="CHECKING">Checking Account (Asset)</option>
-            <option value="SAVINGS">High-Yield Savings (Asset)</option>
-            <option value="INVESTMENT">Brokerage Portfolio (Asset)</option>
+            <option value="CHECKING">Salary / Current Account (Asset)</option>
+            <option value="SAVINGS">High-Yield Savings Account (Asset)</option>
+            <option value="INVESTMENT">Demat & Brokerage Portfolio (Asset)</option>
             <option value="CREDIT_CARD">Credit Card Line (Liability)</option>
-            <option value="MORTGAGE">Real Estate Mortgage (Liability)</option>
+            <option value="MORTGAGE">Home Loan Mortgage (Liability)</option>
             <option value="LOAN">Personal / Auto Loan (Liability)</option>
           </select>
         </div>
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">Initial Balance ($)</label>
-          <input type="number" step="0.01" id="accBalance" placeholder="5000.00" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+          <label class="text-xs font-bold text-slate-700 block mb-1">Initial Balance (₹)</label>
+          <input type="number" step="1" id="accBalance" placeholder="50000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
         </div>
       </div>
       <div class="flex gap-3 pt-2">
@@ -244,11 +244,11 @@
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Merchant / Payee</label>
-          <input type="text" id="txMerchant" placeholder="e.g. Whole Foods Market, Apple Store" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+          <input type="text" id="txMerchant" placeholder="e.g. Swiggy, Amazon India, Tata Power" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
         </div>
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">Amount ($) — Positive for Income, Negative for Expense</label>
-          <input type="number" step="0.01" id="txAmount" placeholder="-85.00" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+          <label class="text-xs font-bold text-slate-700 block mb-1">Amount (₹) — Positive for Income, Negative for Expense</label>
+          <input type="number" step="0.01" id="txAmount" placeholder="-1500.00" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Category</label>
@@ -296,11 +296,11 @@
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Impact Summary (Optional)</label>
-          <input type="text" id="alertImpact" placeholder="e.g. -$325/yr Interest Burn" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
+          <input type="text" id="alertImpact" placeholder="e.g. -₹18,500/yr Interest Burn" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 font-mono">
         </div>
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Financial Analysis & Recommended Action</label>
-          <textarea id="alertMessage" rows="3" placeholder="Explain the mathematical risk and specific steps the client must take..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
+          <textarea id="alertMessage" rows="3" placeholder="Explain the quantitative risk and specific steps the client must take..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900"></textarea>
         </div>
       </div>
       <div class="flex gap-3 pt-2">
@@ -324,7 +324,7 @@
       <div class="space-y-3">
         <div>
           <label class="text-xs font-bold text-slate-700 block mb-1">Recommendation Title</label>
-          <input type="text" id="recTitle" placeholder="e.g. Rebalance Equities into International Index" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+          <input type="text" id="recTitle" placeholder="e.g. Allocate to Nifty 50 Index Fund" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -397,6 +397,10 @@
     let accessToken = localStorage.getItem('tb_access_token');
     let currentPage = 'dashboard';
     let chartInstances = {};
+
+    function formatINR(val) {
+      return Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
@@ -514,15 +518,15 @@
 
       const ownerItems = [
         { id: 'dashboard', label: '📊 Personal Command Center' },
-        { id: 'accounts', label: '🏦 My Bank Accounts' },
+        { id: 'accounts', label: '🏦 My Bank Accounts (₹)' },
         { id: 'transactions', label: '💳 Transaction Journal' },
         { id: 'budgets', label: '🎯 My Monthly Budgets' },
-        { id: 'investments', label: '📈 Investment Portfolio' },
-        { id: 'taxes', label: '📑 Tax Estimation' },
+        { id: 'investments', label: '📈 Investment Portfolio (₹)' },
+        { id: 'taxes', label: '📑 Income Tax Planning' },
         { id: 'debt', label: '📉 Debt Payoff Plan' },
         { id: 'health', label: '🩺 Financial Health' },
-        { id: 'compliance', label: '🛡️ Compliance Status' },
-        { id: 'reports', label: '📋 Financial Reports' },
+        { id: 'compliance', label: '🛡️ Compliance & KYC' },
+        { id: 'reports', label: '📋 Financial Reports (INR)' },
         { id: 'audit', label: '🔒 Merkle Audit Chain' },
         { id: 'recommendations', label: '💡 Advisor Insights' },
         { id: 'profile', label: '👤 Profile & Security' }
@@ -569,9 +573,6 @@
       renderPageView(pageId);
     }
 
-    // -------------------------------------------------------------
-    // Page Rendering Engine
-    // -------------------------------------------------------------
     async function renderPageView(pageId) {
       const container = document.getElementById('pageContent');
       container.innerHTML = '<div class="text-center py-12 text-slate-400 font-medium">Loading live financial data...</div>';
@@ -602,7 +603,7 @@
     }
 
     // =========================================================================
-    // A. ACCOUNT OWNER (USER) DASHBOARD: Personal Command Center
+    // A. ACCOUNT OWNER (USER) DASHBOARD: Personal Command Center (INR ₹)
     // =========================================================================
     async function renderUserDashboard(container) {
       const [nwRes, txRes, bRes, hRes, alertRes] = await Promise.all([
@@ -656,23 +657,23 @@
           </div>
         </div>
 
-        <!-- Metric Summary Cards -->
+        <!-- Metric Summary Cards in INR (₹) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Assets</span>
-            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">$${Number(nw.total_assets).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">Checking, Savings & Stocks</span>
+            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">₹${formatINR(nw.total_assets)}</p>
+            <span class="text-[11px] text-emerald-700 font-semibold mt-0.5 block">Salary, Savings & Equities</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Liabilities</span>
-            <p class="text-2xl font-black text-rose-700 mt-1.5 font-mono">$${Number(nw.total_liabilities).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-[11px] text-slate-400 mt-0.5 block">Mortgage & Credit Balance</span>
+            <p class="text-2xl font-black text-rose-700 mt-1.5 font-mono">₹${formatINR(nw.total_liabilities)}</p>
+            <span class="text-[11px] text-slate-400 mt-0.5 block">Home Loan & Credit Balance</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Net Worth</span>
-            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">$${Number(nw.net_worth).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+            <p class="text-2xl font-black text-slate-900 mt-1.5 font-mono">₹${formatINR(nw.net_worth)}</p>
             <span class="text-[11px] text-slate-400 mt-0.5 block">Total Assets minus Debts</span>
           </div>
 
@@ -683,12 +684,12 @@
           </div>
         </div>
 
-        <!-- Cash Flow & Budget Allocation Charts -->
+        <!-- Cash Flow & Budget Allocation Charts in INR (₹) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 card-shadow">
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-bold text-slate-900 text-sm">Monthly Cash Flow (Inflows vs Outflows)</h3>
-              <span class="text-xs text-slate-500 font-mono">Net Inflow: +$7,646.51/mo</span>
+              <span class="text-xs text-slate-500 font-mono">Net Inflow: +₹76,465.10/mo</span>
             </div>
             <div class="h-60">
               <canvas id="userCashflowChart"></canvas>
@@ -703,7 +704,7 @@
           </div>
         </div>
 
-        <!-- Recent Transactions Feed -->
+        <!-- Recent Transactions Feed in INR (₹) -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="font-bold text-slate-900 text-sm">Recent Ledger Activity</h3>
@@ -717,7 +718,7 @@
                   <span class="text-slate-400">${t.date} &bull; ${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span>
                 </div>
                 <span class="font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
-                  ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
+                  ${t.amount >= 0 ? '+' : ''}₹${formatINR(t.amount)}
                 </span>
               </div>
             `).join('')}
@@ -729,7 +730,7 @@
     }
 
     // =========================================================================
-    // B. FINANCIAL ADVISOR DASHBOARD: Institutional Diagnostic Cockpit
+    // B. FINANCIAL ADVISOR DASHBOARD: Institutional Diagnostic Cockpit (INR ₹)
     // =========================================================================
     async function renderAdvisorDashboard(container) {
       const [nwRes, invRes, healthRes, alertRes, stressRes, recRes] = await Promise.all([
@@ -768,11 +769,11 @@
           </div>
         </div>
 
-        <!-- Advisor Diagnostic Metrics -->
+        <!-- Advisor Diagnostic Metrics in INR (₹) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Client Net Liquidity</span>
-            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$40,950.00</p>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">₹5,09,500.00</p>
             <span class="text-[11px] text-emerald-700 font-semibold block">8.4 Months living expense reserve</span>
           </div>
 
@@ -784,23 +785,23 @@
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Parametric 1-Day VaR (95%)</span>
-            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${inv.metrics.var_95_daily.toLocaleString()}</p>
+            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">₹${formatINR(inv.metrics.var_95_daily)}</p>
             <span class="text-[11px] text-slate-400 block">Maximum 95% single-day downside</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Debt-to-Income Exposure</span>
-            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">22.8% <span class="text-xs font-semibold text-emerald-700 font-sans">✓ Safe Tier</span></p>
-            <span class="text-[11px] text-slate-400 block">Primary debt is low-rate mortgage</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">35.4% <span class="text-xs font-semibold text-emerald-700 font-sans">✓ Safe Tier</span></p>
+            <span class="text-[11px] text-slate-400 block">Primary debt is SBI Home Loan</span>
           </div>
         </div>
 
-        <!-- Macroeconomic Stress Testing & Shock Diagnostics -->
+        <!-- Macroeconomic Stress Testing & Shock Diagnostics in INR (₹) -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-4">
           <div class="flex justify-between items-center">
             <div>
               <h3 class="font-extrabold text-slate-900 text-sm">Macroeconomic Shock & Stress Testing Matrix</h3>
-              <p class="text-xs text-slate-500">Real-time simulation of market crashes, stagflation, and central bank interest rate shocks on client balance sheet.</p>
+              <p class="text-xs text-slate-500">Real-time simulation of market crashes, stagflation, and RBI repo rate hikes on client balance sheet.</p>
             </div>
             <span class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">Overall Resilience: HIGH</span>
           </div>
@@ -877,8 +878,8 @@
         data: {
           labels: ['March', 'April', 'May', 'June', 'July', 'August 2026'],
           datasets: [
-            { label: 'My Gross Income ($)', data: [9800, 10200, 10400, 10400, 10400, 10400], backgroundColor: '#0f172a', borderRadius: 4 },
-            { label: 'My Total Spending ($)', data: [2800, 3100, 2650, 2900, 2710, 2753], backgroundColor: '#94a3b8', borderRadius: 4 }
+            { label: 'My Gross Income (₹)', data: [98000, 102000, 104000, 104000, 104000, 104000], backgroundColor: '#0f172a', borderRadius: 4 },
+            { label: 'My Total Spending (₹)', data: [28000, 31000, 26500, 29000, 27100, 27534], backgroundColor: '#94a3b8', borderRadius: 4 }
           ]
         },
         options: {
@@ -887,7 +888,7 @@
           plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
           scales: {
             x: { grid: { display: false } },
-            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '$' + v } }
+            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } }
           }
         }
       });
@@ -912,7 +913,7 @@
       });
     }
 
-    // --- 2. Accounts View ---
+    // --- 2. Accounts View (INR ₹) ---
     async function renderAccountsPage(container) {
       const res = await apiRequest('/api/accounts');
       const accounts = await res.json();
@@ -921,8 +922,8 @@
       container.innerHTML = `
         <div class="flex justify-between items-center">
           <div>
-            <h2 class="text-xl font-black text-slate-900">Financial Accounts & Institutions</h2>
-            <p class="text-xs text-slate-500">Real-time aggregated ledger accounts across deposit, credit, and investment lines.</p>
+            <h2 class="text-xl font-black text-slate-900">Financial Accounts & Institutions (INR ₹)</h2>
+            <p class="text-xs text-slate-500">Real-time aggregated ledger accounts across deposit, credit, and investment lines in Indian Rupees.</p>
           </div>
           ${isOwner ? `
             <button onclick="openModal('accountModal')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
@@ -949,10 +950,10 @@
                   <div>
                     <span class="text-[10px] text-slate-400 uppercase font-semibold">Current Balance</span>
                     <p class="text-xl font-black font-mono ${isDebt ? 'text-rose-700' : 'text-slate-900'}">
-                      $${Math.abs(a.current_balance).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                      ₹${formatINR(Math.abs(a.current_balance))}
                     </p>
                   </div>
-                  ${a.credit_limit ? `<span class="text-[10px] text-slate-400 font-mono">Limit: $${a.credit_limit.toLocaleString()}</span>` : ''}
+                  ${a.credit_limit ? `<span class="text-[10px] text-slate-400 font-mono">Limit: ₹${formatINR(a.credit_limit)}</span>` : ''}
                 </div>
               </div>
             `;
@@ -962,11 +963,11 @@
 
       const sel = document.getElementById('txAccountSelect');
       if (sel) {
-        sel.innerHTML = accounts.map(a => `<option value="${a.account_id}">${a.account_name} ($${a.current_balance.toFixed(2)})</option>`).join('');
+        sel.innerHTML = accounts.map(a => `<option value="${a.account_id}">${a.account_name} (₹${formatINR(a.current_balance)})</option>`).join('');
       }
     }
 
-    // --- 3. Transactions View ---
+    // --- 3. Transactions View (INR ₹) ---
     async function renderTransactionsPage(container) {
       const res = await apiRequest('/api/transactions');
       const txs = await res.json();
@@ -976,7 +977,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 class="text-xl font-black text-slate-900">Transaction Journal & Ledger Feed</h2>
-            <p class="text-xs text-slate-500">Atomic double-entry transaction posting with automated categorization.</p>
+            <p class="text-xs text-slate-500">Atomic double-entry transaction posting with automated categorization in Indian Rupees (₹).</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="downloadCSV('transactions')" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition">
@@ -998,7 +999,7 @@
                 <th class="p-3.5">Merchant / Payee</th>
                 <th class="p-3.5">Description</th>
                 <th class="p-3.5">Category</th>
-                <th class="p-3.5 text-right">Amount (USD)</th>
+                <th class="p-3.5 text-right">Amount (INR ₹)</th>
                 <th class="p-3.5 text-center">Status</th>
               </tr>
             </thead>
@@ -1010,7 +1011,7 @@
                   <td class="p-3.5 text-slate-500">${t.raw_description}</td>
                   <td class="p-3.5"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">${t.category_id ? t.category_id.replace('cat_', '') : 'General'}</span></td>
                   <td class="p-3.5 text-right font-mono font-bold ${t.amount >= 0 ? 'text-emerald-700' : 'text-slate-900'}">
-                    ${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}
+                    ${t.amount >= 0 ? '+' : ''}₹${formatINR(t.amount)}
                   </td>
                   <td class="p-3.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">POSTED</span></td>
                 </tr>
@@ -1021,7 +1022,7 @@
       `;
     }
 
-    // --- 4. Budgets View ---
+    // --- 4. Budgets View (INR ₹) ---
     async function renderBudgetsPage(container) {
       const res = await apiRequest('/api/budgets');
       const budgets = await res.json();
@@ -1030,7 +1031,7 @@
       container.innerHTML = `
         <div class="flex justify-between items-center">
           <div>
-            <h2 class="text-xl font-black text-slate-900">Zero-Based Envelope Budgets</h2>
+            <h2 class="text-xl font-black text-slate-900">Zero-Based Envelope Budgets (₹)</h2>
             <p class="text-xs text-slate-500">Monthly envelope tracking with automated rollover and variance monitoring.</p>
           </div>
           ${isOwner ? `
@@ -1053,8 +1054,8 @@
                   <div class="h-full transition-all ${isOver ? 'bg-rose-500' : 'bg-slate-900'}" style="width: ${Math.min(100, b.percentage_spent)}%"></div>
                 </div>
                 <div class="flex justify-between text-xs text-slate-500 font-mono pt-1">
-                  <span>Spent: $${b.spent.toFixed(2)}</span>
-                  <span>Limit: $${b.allocated.toFixed(2)}</span>
+                  <span>Spent: ₹${formatINR(b.spent)}</span>
+                  <span>Limit: ₹${formatINR(b.allocated)}</span>
                 </div>
               </div>
             `;
@@ -1063,7 +1064,7 @@
       `;
     }
 
-    // --- 5. Investments & Monte Carlo View ---
+    // --- 5. Investments & Monte Carlo View (INR ₹) ---
     async function renderInvestmentsPage(container) {
       const res = await apiRequest('/api/investments');
       const data = await res.json();
@@ -1072,7 +1073,7 @@
       container.innerHTML = `
         <div class="flex justify-between items-center">
           <div>
-            <h2 class="text-xl font-black text-slate-900">Investment Portfolio & Risk Analytics</h2>
+            <h2 class="text-xl font-black text-slate-900">Investment Portfolio & Risk Analytics (INR ₹)</h2>
             <p class="text-xs text-slate-500">Asset allocation, Modern Portfolio Theory (MPT) metrics, and 10,000-path Monte Carlo simulations.</p>
           </div>
           ${isOwner ? `
@@ -1085,8 +1086,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[10px] font-bold uppercase text-slate-400">Total Portfolio Value</span>
-            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.total_portfolio_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-            <span class="text-xs text-emerald-700 font-bold font-mono">+$${data.total_unrealized_gain.toLocaleString()} (+${data.unrealized_gain_pct}%)</span>
+            <p class="text-2xl font-black text-slate-900 mt-1 font-mono">₹${formatINR(data.total_portfolio_value)}</p>
+            <span class="text-xs text-emerald-700 font-bold font-mono">+₹${formatINR(data.total_unrealized_gain)} (+${data.unrealized_gain_pct}%)</span>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
@@ -1097,7 +1098,7 @@
 
           <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
             <span class="text-[10px] font-bold uppercase text-slate-400">Daily Value at Risk (95% VaR)</span>
-            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.metrics.var_95_daily.toLocaleString()}</p>
+            <p class="text-2xl font-black text-rose-700 mt-1 font-mono">₹${formatINR(data.metrics.var_95_daily)}</p>
             <span class="text-xs text-slate-400">Maximum 1-Day Downside</span>
           </div>
         </div>
@@ -1121,11 +1122,11 @@
                   <td class="p-3.5 font-bold text-slate-900 font-sans">${h.symbol} <span class="text-slate-400 font-normal block text-[10px]">${h.name}</span></td>
                   <td class="p-3.5 font-sans"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${h.asset_class}</span></td>
                   <td class="p-3.5 text-right">${h.shares}</td>
-                  <td class="p-3.5 text-right">$${h.cost_basis.toFixed(2)}</td>
-                  <td class="p-3.5 text-right font-bold">$${h.current_price.toFixed(2)}</td>
-                  <td class="p-3.5 text-right font-bold text-slate-900">$${h.market_value.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                  <td class="p-3.5 text-right">₹${formatINR(h.cost_basis)}</td>
+                  <td class="p-3.5 text-right font-bold">₹${formatINR(h.current_price)}</td>
+                  <td class="p-3.5 text-right font-bold text-slate-900">₹${formatINR(h.market_value)}</td>
                   <td class="p-3.5 text-right font-bold ${h.unrealized_pnl >= 0 ? 'text-emerald-700' : 'text-rose-700'}">
-                    ${h.unrealized_pnl >= 0 ? '+' : ''}$${h.unrealized_pnl.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                    ${h.unrealized_pnl >= 0 ? '+' : ''}₹${formatINR(h.unrealized_pnl)}
                   </td>
                 </tr>
               `).join('')}
@@ -1137,7 +1138,7 @@
           <div class="flex justify-between items-center">
             <div>
               <h3 class="font-bold text-slate-900 text-base">Stochastic Monte Carlo Simulation</h3>
-              <p class="text-xs text-slate-500">10,000-Path Geometric Brownian Motion wealth forecast.</p>
+              <p class="text-xs text-slate-500">10,000-Path Geometric Brownian Motion wealth forecast in INR (₹).</p>
             </div>
             <button onclick="runCustomMonteCarlo()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
               ⚡ Run 10k Simulation
@@ -1147,15 +1148,15 @@
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
             <div>
               <label class="font-bold text-slate-600 block mb-1">Expected Return (%)</label>
-              <input type="number" step="0.5" id="mcReturnInput" value="8.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+              <input type="number" step="0.5" id="mcReturnInput" value="12.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
             </div>
             <div>
               <label class="font-bold text-slate-600 block mb-1">Volatility (σ %)</label>
-              <input type="number" step="0.5" id="mcVolInput" value="15.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+              <input type="number" step="0.5" id="mcVolInput" value="16.0" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
             </div>
             <div>
-              <label class="font-bold text-slate-600 block mb-1">Annual Savings ($)</label>
-              <input type="number" id="mcSavingsInput" value="24000" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
+              <label class="font-bold text-slate-600 block mb-1">Annual Savings (₹)</label>
+              <input type="number" id="mcSavingsInput" value="300000" class="w-full bg-white border border-slate-300 rounded-lg p-2 font-mono">
             </div>
             <div>
               <label class="font-bold text-slate-600 block mb-1">Time Horizon (Years)</label>
@@ -1173,9 +1174,9 @@
     }
 
     async function runCustomMonteCarlo() {
-      const ret = parseFloat(document.getElementById('mcReturnInput').value || 8.0) / 100.0;
-      const vol = parseFloat(document.getElementById('mcVolInput').value || 15.0) / 100.0;
-      const savings = parseFloat(document.getElementById('mcSavingsInput').value || 24000);
+      const ret = parseFloat(document.getElementById('mcReturnInput').value || 12.0) / 100.0;
+      const vol = parseFloat(document.getElementById('mcVolInput').value || 16.0) / 100.0;
+      const savings = parseFloat(document.getElementById('mcSavingsInput').value || 300000);
       const years = parseInt(document.getElementById('mcYearsInput').value || 25);
 
       const res = await apiRequest('/api/investments/monte-carlo', 'POST', {
@@ -1183,7 +1184,7 @@
         volatility: vol,
         annual_contribution: savings,
         years: years,
-        initial_wealth: 94200.0
+        initial_wealth: 942000.0
       });
       const data = await res.json();
 
@@ -1207,41 +1208,41 @@
           plugins: { legend: { labels: { font: { family: 'Plus Jakarta Sans', size: 11 } } } },
           scales: {
             x: { grid: { display: false } },
-            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '$' + (v>=1e6 ? (v/1e6).toFixed(1)+'M' : (v/1e3).toFixed(0)+'k') } }
+            y: { grid: { color: '#f8fafc' }, ticks: { callback: v => '₹' + (v>=1e7 ? (v/1e7).toFixed(1)+' Cr' : (v>=1e5 ? (v/1e5).toFixed(1)+' L' : (v/1e3).toFixed(0)+'k')) } }
           }
         }
       });
     }
 
-    // --- 6. Taxes View ---
+    // --- 6. Taxes View (INR ₹) ---
     async function renderTaxesPage(container) {
-      const res = await apiRequest('/api/taxes?state=CA');
+      const res = await apiRequest('/api/taxes');
       const data = await res.json();
 
       container.innerHTML = `
         <div class="space-y-6">
           <div>
-            <h2 class="text-xl font-black text-slate-900">50-State Progressive Tax Planning & Optimization</h2>
-            <p class="text-xs text-slate-500">Statutory federal and state marginal liability computations with automated loss harvesting.</p>
+            <h2 class="text-xl font-black text-slate-900">Income Tax Planning & Loss Harvesting (INR ₹)</h2>
+            <p class="text-xs text-slate-500">${data.regime} with automated capital gains and STCG offsets.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-400">Federal Estimated Liability</span>
-              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.federal_estimated_tax.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Estimated Income Tax Liability</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">₹${formatINR(data.federal_estimated_tax)}</p>
               <span class="text-xs text-slate-400 font-mono">Effective Rate: ${data.effective_federal_rate_pct}%</span>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-400">State Marginal Rate (${data.state_tax.state})</span>
-              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">${(data.state_tax.marginal_rate * 100).toFixed(2)}%</p>
-              <span class="text-xs text-slate-400 font-mono">State Liability: $${(data.state_tax.total_tax_cents/100).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Standard Deduction Claimed</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">₹${formatINR(data.standard_deduction)}</p>
+              <span class="text-xs text-slate-400 font-mono">Taxable Base: ₹${formatINR(data.net_taxable_income)}</span>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">Tax-Loss Harvesting Opportunity</span>
-              <p class="text-2xl font-black text-emerald-700 mt-1 font-mono">$720.00</p>
-              <span class="text-xs text-emerald-800 font-semibold">✓ IRS 30-Day Wash-Sale Safe</span>
+              <p class="text-2xl font-black text-emerald-700 mt-1 font-mono">₹35,000.00</p>
+              <span class="text-xs text-emerald-800 font-semibold">✓ Setoff Eligible for FY 2025-26</span>
             </div>
           </div>
 
@@ -1249,11 +1250,11 @@
             <h3 class="font-bold text-slate-900 text-sm">Automated Tax-Loss Harvest Recommendations</h3>
             <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
               <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                <span>Security: BND (Vanguard Total Bond Market)</span>
-                <span>Harvestable Loss: $720.00</span>
+                <span>Security: Debt ETF (Short-Term Capital Loss)</span>
+                <span>Harvestable Loss: ₹35,000.00</span>
               </div>
               <p class="text-xs text-slate-600 leading-relaxed">
-                Recommended replacement security: <strong>AGG (iShares Core US Aggregate Bond)</strong>. Harvesting this position offsets realized capital gains without triggering the IRS 30-day wash-sale rule.
+                Recommended action: Realize ₹35,000.00 short term loss in Debt ETF to offset STCG on Large-Cap equity rebalancing without violating income tax guidelines.
               </p>
             </div>
             <p class="text-[11px] text-slate-400 italic">${data.disclaimer}</p>
@@ -1262,7 +1263,7 @@
       `;
     }
 
-    // --- 7. Debt View ---
+    // --- 7. Debt View (INR ₹) ---
     async function renderDebtPage(container) {
       const res = await apiRequest('/api/debt');
       const data = await res.json();
@@ -1270,25 +1271,25 @@
       container.innerHTML = `
         <div class="space-y-6">
           <div>
-            <h2 class="text-xl font-black text-slate-900">Debt Amortization & Avalanche Optimizer</h2>
+            <h2 class="text-xl font-black text-slate-900">Debt Amortization & Avalanche Optimizer (INR ₹)</h2>
             <p class="text-xs text-slate-500">Mathematical debt payoff acceleration comparing Avalanche (Highest APR) vs Snowball.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">Total Debt Burden</span>
-              <p class="text-2xl font-black text-rose-700 mt-1 font-mono">$${data.total_debt_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <p class="text-2xl font-black text-rose-700 mt-1 font-mono">₹${formatINR(data.total_debt_balance)}</p>
               <span class="text-xs text-slate-400 font-mono">DTI Ratio: ${data.debt_to_income_ratio_pct}%</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
-              <span class="text-[10px] font-bold uppercase text-slate-400">Monthly Minimum Required</span>
-              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">$${data.total_monthly_minimum.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+              <span class="text-[10px] font-bold uppercase text-slate-400">Monthly Minimum Required (EMIs)</span>
+              <p class="text-2xl font-black text-slate-900 mt-1 font-mono">₹${formatINR(data.total_monthly_minimum)}</p>
               <span class="text-xs text-slate-400">Scheduled Outflows</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">Avalanche Payoff Priority</span>
-              <p class="text-lg font-black text-slate-900 mt-1 truncate">Credit Card (22.4%)</p>
-              <span class="text-xs text-emerald-700 font-semibold">Saves $325.00 Interest</span>
+              <p class="text-lg font-black text-slate-900 mt-1 truncate">Credit Card (42.0%)</p>
+              <span class="text-xs text-emerald-700 font-semibold">Saves ₹18,500.00 Interest</span>
             </div>
           </div>
 
@@ -1302,8 +1303,8 @@
                     <span class="text-slate-400">${d.type} &bull; ${d.interest_rate}% APR</span>
                   </div>
                   <div class="text-right font-mono">
-                    <p class="font-bold text-slate-900 text-sm">$${d.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                    <span class="text-slate-400">Min: $${d.min_payment}/mo</span>
+                    <p class="font-bold text-slate-900 text-sm">₹${formatINR(d.balance)}</p>
+                    <span class="text-slate-400">Min EMI: ₹${formatINR(d.min_payment)}/mo</span>
                   </div>
                 </div>
               `).join('')}
@@ -1367,14 +1368,14 @@
         <div class="space-y-6">
           <div>
             <h2 class="text-xl font-black text-slate-900">Regulatory Compliance & AML Screening</h2>
-            <p class="text-xs text-slate-500">Bank-grade identity verification, FinCEN CTR structuring monitor, and OFAC sanctions checks.</p>
+            <p class="text-xs text-slate-500">Bank-grade PAN/Aadhaar identity verification, structuring detection, and watchlists.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">KYC Verification Tier</span>
               <p class="text-lg font-black text-slate-900 mt-1">${data.kyc_status}</p>
-              <span class="text-xs text-slate-400">CIP Identification Verified</span>
+              <span class="text-xs text-slate-400">PAN / CKYC Identification Verified</span>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">Risk Profile Rating</span>
@@ -1384,21 +1385,21 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow">
               <span class="text-[10px] font-bold uppercase text-slate-400">Sanctions Watchlist</span>
               <p class="text-lg font-black text-emerald-700 mt-1">PASSED / CLEAR</p>
-              <span class="text-xs text-slate-400">OFAC SDN Zero Matches</span>
+              <span class="text-xs text-slate-400">FIU-IND SDN Zero Matches</span>
             </div>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-2xl p-6 card-shadow space-y-3">
-            <h3 class="font-bold text-slate-900 text-sm">FinCEN Structuring & CTR Monitor</h3>
+            <h3 class="font-bold text-slate-900 text-sm">FIU-IND Structuring & CTR Monitor</h3>
             <p class="text-xs text-slate-600">
-              Evaluated posted transactions against the $10,000.00 CTR threshold. No suspicious structuring or smurfing patterns detected.
+              Evaluated posted transactions against statutory high-value cash transaction thresholds. No suspicious structuring or smurfing patterns detected.
             </p>
           </div>
         </div>
       `;
     }
 
-    // --- 10. Reports View ---
+    // --- 10. Reports View (INR ₹) ---
     async function renderReportsPage(container) {
       const res = await apiRequest('/api/reports/summary');
       const data = await res.json();
@@ -1407,7 +1408,7 @@
         <div class="space-y-6">
           <div class="flex justify-between items-center">
             <div>
-              <h2 class="text-xl font-black text-slate-900">Financial Reports & Statements</h2>
+              <h2 class="text-xl font-black text-slate-900">Financial Reports & Statements (INR ₹)</h2>
               <p class="text-xs text-slate-500">GAAP Balance Sheets, Income Statements, and Exportable CSV Ledger Records.</p>
             </div>
             <div class="flex gap-2">
@@ -1433,7 +1434,7 @@
                   ${data.accounts.filter(a => a.balance > 0).map(a => `
                     <div class="flex justify-between">
                       <span class="text-slate-600">${a.name}</span>
-                      <span class="font-bold text-slate-900">$${a.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                      <span class="font-bold text-slate-900">₹${formatINR(a.balance)}</span>
                     </div>
                   `).join('')}
                 </div>
@@ -1445,7 +1446,7 @@
                   ${data.accounts.filter(a => a.balance < 0).map(a => `
                     <div class="flex justify-between">
                       <span class="text-slate-600">${a.name}</span>
-                      <span class="font-bold text-slate-900">$${Math.abs(a.balance).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                      <span class="font-bold text-slate-900">₹${formatINR(Math.abs(a.balance))}</span>
                     </div>
                   `).join('')}
                 </div>
@@ -1690,7 +1691,7 @@
     }
 
     async function promptEditBudgets() {
-      const housing = prompt('Enter Housing monthly budget ($):', '2500');
+      const housing = prompt('Enter Housing monthly budget (₹):', '35000');
       if (housing) {
         await apiRequest('/api/budgets/envelope', 'POST', { category_id: 'cat_housing', allocated: parseFloat(housing) });
         showToast('Housing budget updated!');
@@ -1699,10 +1700,10 @@
     }
 
     async function promptAddHolding() {
-      const sym = prompt('Enter Ticker Symbol (e.g. MSFT, AAPL, VOO):');
+      const sym = prompt('Enter Ticker Symbol (e.g. INFY, RELIANCE, TCS, NIFTYBEES):');
       if (sym) {
         const shares = prompt('Enter number of shares:');
-        const cost = prompt('Enter average cost basis per share ($):');
+        const cost = prompt('Enter average cost basis per share (₹):');
         if (shares && cost) {
           await apiRequest('/api/investments/holdings', 'POST', {
             symbol: sym.toUpperCase(),

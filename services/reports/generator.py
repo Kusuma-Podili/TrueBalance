@@ -1,7 +1,7 @@
 """
-Financial Reports Generation & Export Engine.
+Financial Reports Generation & Export Engine (INR / Indian Rupee).
 Generates comprehensive Balance Sheets, Income Statements, Net Worth summaries,
-Budget Performance audits, Tax reports, and CSV exports.
+Budget Performance audits, Tax reports, and CSV exports in INR (₹).
 """
 
 import csv
@@ -14,7 +14,7 @@ from services.budget.zero_based import BudgetManager
 
 
 class FinancialReportsGenerator:
-    """Generates structured financial reports for Account Owners and Advisors."""
+    """Generates structured financial reports for Account Owners and Advisors in INR (₹)."""
 
     @staticmethod
     def generate_full_financial_summary(
@@ -29,7 +29,9 @@ class FinancialReportsGenerator:
         budget_status = budget_mgr.get_envelope_status(user_id, time.strftime("%Y-%m"))
 
         return {
-            "generated_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+            "currency": "INR",
+            "currency_symbol": "₹",
+            "generated_at": time.strftime("%Y-%m-%d %H:%M:%S IST", time.localtime()),
             "user_id": user_id,
             "net_worth_summary": {
                 "total_assets": str(assets.value),
@@ -45,7 +47,8 @@ class FinancialReportsGenerator:
                     "name": a.account_name,
                     "type": a.account_type,
                     "balance": a.current_balance_cents / 100.0,
-                    "institution": a.institution_name
+                    "institution": a.institution_name,
+                    "currency": "INR"
                 }
                 for a in accounts
             ],
@@ -71,15 +74,15 @@ class FinancialReportsGenerator:
     def export_accounts_csv(user_id: str, account_mgr: AccountManager) -> str:
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Account ID", "Account Name", "Type", "Institution", "Currency", "Balance (USD)"])
+        writer.writerow(["Account ID", "Account Name", "Type", "Institution", "Currency", "Balance (INR ₹)"])
         for acc in account_mgr.list_user_accounts(user_id):
             writer.writerow([
                 acc.account_id,
                 acc.account_name,
                 acc.account_type,
                 acc.institution_name,
-                acc.currency,
-                f"{acc.current_balance_cents / 100.0:.2f}"
+                "INR",
+                f"₹{acc.current_balance_cents / 100.0:,.2f}"
             ])
         return output.getvalue()
 
@@ -87,7 +90,7 @@ class FinancialReportsGenerator:
     def export_transactions_csv(transactions: List[Any]) -> str:
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Transaction ID", "Date", "Merchant", "Description", "Category", "Amount (USD)", "Status"])
+        writer.writerow(["Transaction ID", "Date", "Merchant / Payee", "Description", "Category", "Amount (INR ₹)", "Status"])
         for tx in transactions:
             writer.writerow([
                 tx.transaction_id,
@@ -95,7 +98,7 @@ class FinancialReportsGenerator:
                 tx.merchant_name,
                 tx.raw_description,
                 tx.category_id or "Uncategorized",
-                f"{tx.amount_cents / 100.0:.2f}",
+                f"₹{tx.amount_cents / 100.0:,.2f}",
                 tx.status
             ])
         return output.getvalue()

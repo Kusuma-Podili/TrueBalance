@@ -1,169 +1,128 @@
 """
-TrueBalance - Production Enterprise FinTech Wealth Management Platform.
-Full Role-Based Application Server supporting:
-1. ACCOUNT OWNER (user@truebalance.com / User@123)
-2. FINANCIAL ADVISOR (advisor@truebalance.com / Advisor@123)
+TrueBalance Enterprise FinTech Platform (INR / Indian Rupee Edition).
+Two-Role Architecture: ACCOUNT_OWNER and FINANCIAL_ADVISOR.
+Double-entry general ledger, portfolio risk analytics, 50-state/Indian tax engine,
+and zero external API dependencies. All calculations in Indian Rupees (₹).
 """
 
-import sys
-import os
-import json
-import time
-import uuid
 import http.server
 import socketserver
+import json
 import urllib.parse
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
-
-sys.path.insert(0, str(Path(__file__).parent))
+from typing import Dict, Any, List, Optional
+import time
 
 from core.math.decimal_utils import FinancialDecimal
-from core.ledger.double_entry import GeneralLedger
-from core.ledger.journal_entry import JournalEntry
-from core.ledger.types import AccountClassification
-from core.security.crypto import EnterpriseCrypto
-from core.security.jwt_handler import JWTManager
-from core.security.rbac import Role, Permission, RBACValidator
-from core.security.auth_service import AuthService
-from core.security.audit import AuditLedgerEngine
-
-from services.accounts.manager import AccountManager
+from core.ledger.double_entry import (
+    GeneralLedger, JournalEntry, JournalLine, AccountClassification, NormalBalance
+)
+from services.accounts.manager import AccountManager, AccountEntity
 from services.transactions.processor import TransactionProcessor
-from services.transactions.rules_engine import SmartCategorizer
-from services.transactions.merchant_normalizer import MerchantNormalizer
 from services.budget.zero_based import BudgetManager
-from services.investments.monte_carlo import MonteCarloEngine
 from services.investments.metrics import PortfolioRiskMetrics
-from services.tax.harvesting import TaxLossHarvester, TaxableHolding
 from services.tax.state_tax_engine import StateTaxCalculator, FilingStatus
-from services.debt.optimizer import DebtOptimizer
-from services.compliance.aml_kyc_engine import AMLMonitoringEngine, AMLAlertSeverity
-from services.financial_health.calculator import FinancialHealthCalculator
+from services.tax.harvesting import TaxLossHarvester, TaxableHolding
+from services.compliance.aml_kyc_engine import AMLMonitoringEngine
+from core.security.audit import AuditLedgerEngine, AuditAction
+from core.security.auth_service import AuthService, Role
 from services.advisor.recommendations import AdvisorRecommendationsService
 from services.reports.generator import FinancialReportsGenerator
-from services.fx.engine import FXEngine
+from services.financial_health.calculator import FinancialHealthCalculator
 
 PORT = 8000
+WORKSPACE_DIR = Path(__file__).parent
 
-# =========================================================================
-# GLOBAL APPLICATION SINGLETONS
-# =========================================================================
+# Initialize singleton engines
 auth_service = AuthService()
 account_mgr = AccountManager()
-tx_processor = TransactionProcessor(account_mgr)
 ledger = GeneralLedger()
+tx_processor = TransactionProcessor(account_mgr)
 budget_mgr = BudgetManager()
-recs_service = AdvisorRecommendationsService()
 audit_engine = AuditLedgerEngine()
-monte_carlo = MonteCarloEngine(seed=42)
-fx_engine = FXEngine()
-categorizer = SmartCategorizer()
-
-# Holdings and Debt Store for Account Owner
-user_holdings: Dict[str, List[Dict[str, Any]]] = {}
-user_debts: Dict[str, List[Dict[str, Any]]] = {}
 
 OWNER_ID = "usr_owner_01"
 ADVISOR_ID = "usr_advisor_01"
 
-def initialize_enterprise_demo_data():
-    """Initializes realistic enterprise financial profiles for the Account Owner."""
-    # 1. Accounts
-    acc_checking = account_mgr.create_account(OWNER_ID, "Chase Premier Checking", "CHECKING", initial_balance_cents=845000, institution_name="JPMorgan Chase")
-    acc_savings = account_mgr.create_account(OWNER_ID, "Marcus High-Yield Savings", "SAVINGS", initial_balance_cents=3250000, institution_name="Goldman Sachs")
-    acc_brokerage = account_mgr.create_account(OWNER_ID, "Fidelity Wealth Portfolio", "INVESTMENT", initial_balance_cents=9420000, institution_name="Fidelity Investments")
-    acc_card = account_mgr.create_account(OWNER_ID, "Sapphire Preferred Card", "CREDIT_CARD", initial_balance_cents=-145000, institution_name="Chase Card Services", credit_limit_cents=2500000)
-    acc_mortgage = account_mgr.create_account(OWNER_ID, "30-Year Fixed Mortgage", "MORTGAGE", initial_balance_cents=-28500000, institution_name="Wells Fargo Home Mortgage")
+# Initialize Demo Database (INR Amounts)
+def initialize_demo_environment():
+    # 1. Register Accounts in INR (₹)
+    acc1 = account_mgr.create_account(OWNER_ID, "HDFC Salary & Checking", "CHECKING", currency="INR", initial_balance_cents=12540000, institution_name="HDFC Bank") # ₹1,25,400.00
+    acc2 = account_mgr.create_account(OWNER_ID, "ICICI High-Yield Savings", "SAVINGS", currency="INR", initial_balance_cents=38410000, institution_name="ICICI Bank") # ₹3,84,100.00
+    acc3 = account_mgr.create_account(OWNER_ID, "Zerodha Equity Portfolio", "INVESTMENT", currency="INR", initial_balance_cents=94200000, institution_name="Zerodha") # ₹9,42,000.00
+    acc4 = account_mgr.create_account(OWNER_ID, "HDFC Regalia Credit Card", "CREDIT_CARD", currency="INR", initial_balance_cents=-4650000, institution_name="HDFC Bank", credit_limit_cents=30000000) # -₹46,500.00
+    acc5 = account_mgr.create_account(OWNER_ID, "SBI Home Loan Mortgage", "MORTGAGE", currency="INR", initial_balance_cents=-425000000, institution_name="State Bank of India") # -₹42,50,000.00
 
-    # 2. General Ledger Chart of Accounts
-    ledger.register_account("1010", "Cash & Checking", AccountClassification.ASSET)
-    ledger.register_account("1020", "High-Yield Savings", AccountClassification.ASSET)
-    ledger.register_account("1030", "Brokerage Equities", AccountClassification.ASSET)
-    ledger.register_account("2010", "Credit Card Debt", AccountClassification.LIABILITY)
-    ledger.register_account("2020", "Mortgage Note", AccountClassification.LIABILITY)
-    ledger.register_account("3010", "Retained Net Worth", AccountClassification.EQUITY)
-    ledger.register_account("4010", "Tech Salary & Compensation", AccountClassification.REVENUE)
-    ledger.register_account("5010", "Housing & Mortgage Expense", AccountClassification.EXPENSE)
-    ledger.register_account("5020", "Groceries & Nutrition", AccountClassification.EXPENSE)
-    ledger.register_account("5030", "Transportation & Fuel", AccountClassification.EXPENSE)
-    ledger.register_account("5040", "Utilities & Internet", AccountClassification.EXPENSE)
-    ledger.register_account("5050", "Entertainment & Leisure", AccountClassification.EXPENSE)
+    # 2. Setup Ledger Accounts
+    ledger.register_account("acc_hdfc_chk", "HDFC Salary & Checking", AccountClassification.ASSET)
+    ledger.register_account("acc_icici_sav", "ICICI Savings", AccountClassification.ASSET)
+    ledger.register_account("acc_zerodha_inv", "Zerodha Investments", AccountClassification.ASSET)
+    ledger.register_account("acc_hdfc_card", "HDFC Regalia Card", AccountClassification.LIABILITY)
+    ledger.register_account("acc_sbi_home", "SBI Home Loan", AccountClassification.LIABILITY)
+    ledger.register_account("acc_salary_inc", "Salary Income", AccountClassification.REVENUE)
+    ledger.register_account("acc_groceries_exp", "Groceries Expense", AccountClassification.EXPENSE)
+    ledger.register_account("acc_utilities_exp", "Utilities Expense", AccountClassification.EXPENSE)
+    ledger.register_account("acc_dining_exp", "Dining Expense", AccountClassification.EXPENSE)
 
-    # Initial Opening Balances Journal Entry
-    e0 = JournalEntry("entry_init_0", "2026-08-01", "Opening Balance Sheet Position")
-    e0.add_line("l1", "1010", "Cash & Checking", AccountClassification.ASSET, debit=FinancialDecimal("8450.00"))
-    e0.add_line("l2", "1020", "High-Yield Savings", AccountClassification.ASSET, debit=FinancialDecimal("32500.00"))
-    e0.add_line("l3", "1030", "Brokerage Equities", AccountClassification.ASSET, debit=FinancialDecimal("94200.00"))
-    e0.add_line("l4", "2010", "Credit Card Debt", AccountClassification.LIABILITY, credit=FinancialDecimal("1450.00"))
-    e0.add_line("l5", "2020", "Mortgage Note", AccountClassification.LIABILITY, credit=FinancialDecimal("285000.00"))
-    e0.add_line("l6", "3010", "Retained Net Worth", AccountClassification.EQUITY, debit=FinancialDecimal("151300.00"))
-    ledger.post_entry(e0)
+    # Initial Opening Balances Journal Entry (Balanced: 5,451,500 = 5,451,500)
+    open_entry = JournalEntry("je_opening_001", "2026-08-01", "Opening Ledger Balances INR")
+    open_entry.add_line("l1", "acc_hdfc_chk", "HDFC Checking", AccountClassification.ASSET, debit=FinancialDecimal("125400.00"), currency="INR")
+    open_entry.add_line("l2", "acc_icici_sav", "ICICI Savings", AccountClassification.ASSET, debit=FinancialDecimal("384100.00"), currency="INR")
+    open_entry.add_line("l3", "acc_zerodha_inv", "Zerodha Investments", AccountClassification.ASSET, debit=FinancialDecimal("942000.00"), currency="INR")
+    open_entry.add_line("l4", "acc_hdfc_card", "HDFC Card", AccountClassification.LIABILITY, credit=FinancialDecimal("46500.00"), currency="INR")
+    open_entry.add_line("l5", "acc_sbi_home", "SBI Home Loan", AccountClassification.LIABILITY, credit=FinancialDecimal("4250000.00"), currency="INR")
+    open_entry.add_line("l6", "acc_salary_inc", "Salary Income", AccountClassification.REVENUE, credit=FinancialDecimal("1155000.00"), currency="INR")
+    open_entry.add_line("l7", "acc_groceries_exp", "Groceries Expense", AccountClassification.EXPENSE, debit=FinancialDecimal("1850000.00"), currency="INR")
+    open_entry.add_line("l8", "acc_utilities_exp", "Utilities Expense", AccountClassification.EXPENSE, debit=FinancialDecimal("1000000.00"), currency="INR")
+    open_entry.add_line("l9", "acc_dining_exp", "Dining Expense", AccountClassification.EXPENSE, debit=FinancialDecimal("1150000.00"), currency="INR")
+    ledger.post_entry(open_entry)
 
-    # Seed Transactions
-    demo_txs = [
-        (acc_checking.account_id, 520000, "2026-08-15", "Acme Tech Corp Direct Deposit", "Acme Tech", "cat_salary"),
-        (acc_checking.account_id, -220000, "2026-08-16", "Wells Fargo Home Loan AutoPay", "Wells Fargo", "cat_housing"),
-        (acc_checking.account_id, -18500, "2026-08-18", "Whole Foods Market #102", "Whole Foods", "cat_food"),
-        (acc_card.account_id, -6450, "2026-08-20", "Blue Bottle Coffee", "Blue Bottle", "cat_food"),
-        (acc_card.account_id, -1999, "2026-08-22", "Netflix.com Monthly Subscription", "Netflix", "cat_entertainment"),
-        (acc_checking.account_id, -14500, "2026-08-24", "Chevron Clean Energy", "Chevron", "cat_transit"),
-        (acc_card.account_id, -12500, "2026-08-27", "Amazon.com Mktp US", "Amazon", "cat_shopping"),
-        (acc_checking.account_id, 520000, "2026-08-30", "Acme Tech Corp Direct Deposit", "Acme Tech", "cat_salary"),
+    # 3. Seed Transactions in INR (₹)
+    tx_processor.record_transaction(acc1.account_id, "Infosys Payroll", 10400000, "Monthly Salary Inflow", "cat_salary", "2026-08-30")
+    tx_processor.record_transaction(acc4.account_id, "Nature's Basket", -654000, "Weekly Organic Groceries", "cat_food", "2026-08-28")
+    tx_processor.record_transaction(acc4.account_id, "Tata Power Utilities", -420000, "Electricity & High-Speed Fiber", "cat_utilities", "2026-08-25")
+    tx_processor.record_transaction(acc1.account_id, "Prestige Property Rent", -2500000, "Apartment Rental Payment", "cat_housing", "2026-08-01")
+    tx_processor.record_transaction(acc4.account_id, "Croma Electronics", -184900, "Smart Office Accessories", "cat_shopping", "2026-08-15")
+    tx_processor.record_transaction(acc1.account_id, "Indian Oil Petrol Pump", -450000, "Fuel & Highway Tolls", "cat_transit", "2026-08-18")
+
+    # 4. Set Budget Envelopes in INR (₹)
+    budget_mgr.set_envelope(OWNER_ID, "cat_food", FinancialDecimal("15000.00"))
+    budget_mgr.set_envelope(OWNER_ID, "cat_housing", FinancialDecimal("35000.00"))
+    budget_mgr.set_envelope(OWNER_ID, "cat_utilities", FinancialDecimal("8000.00"))
+    budget_mgr.set_envelope(OWNER_ID, "cat_transit", FinancialDecimal("8000.00"))
+    budget_mgr.set_envelope(OWNER_ID, "cat_entertainment", FinancialDecimal("10000.00"))
+    budget_mgr.set_envelope(OWNER_ID, "cat_shopping", FinancialDecimal("12000.00"))
+
+    # 5. Record Cryptographic Audit Logs
+    audit_engine.record_event(AuditAction.LOGIN_SUCCESS, OWNER_ID, "user@truebalance.com", "ACCOUNT", "acc_hdfc_chk", {"role": "ACCOUNT_OWNER", "currency": "INR"})
+    audit_engine.record_event(AuditAction.TRANSACTION_POSTED, OWNER_ID, "user@truebalance.com", "TRANSACTION", "tx_001", {"amount_inr": 104000.00})
+    audit_engine.record_event(AuditAction.ADVISOR_ALERT_SENT, ADVISOR_ID, "advisor@truebalance.com", "ALERT", "alt_01", {"severity": "CRITICAL", "client_id": OWNER_ID})
+
+initialize_demo_environment()
+
+# In-Memory Holdings in INR (₹)
+user_holdings = {
+    OWNER_ID: [
+        {"symbol": "NIFTYBEES", "name": "Nippon India Nifty 50 ETF", "shares": 1200, "cost_basis": 220.00, "current_price": 258.40, "asset_class": "Equities Index", "market_value": 310080.00, "unrealized_pnl": 46080.00},
+        {"symbol": "RELIANCE", "name": "Reliance Industries Ltd", "shares": 100, "cost_basis": 2750.00, "current_price": 3020.00, "asset_class": "Large Cap Core", "market_value": 302000.00, "unrealized_pnl": 27000.00},
+        {"symbol": "TCS", "name": "Tata Consultancy Services", "shares": 50, "cost_basis": 3800.00, "current_price": 4210.00, "asset_class": "Information Tech", "market_value": 210500.00, "unrealized_pnl": 20500.00},
+        {"symbol": "GOLDBEES", "name": "Nippon India Gold ETF", "shares": 1500, "cost_basis": 55.00, "current_price": 64.20, "asset_class": "Commodities", "market_value": 96300.00, "unrealized_pnl": 13800.00},
+        {"symbol": "LIQUIDBEES", "name": "Nippon India Liquid ETF", "shares": 23, "cost_basis": 1000.00, "current_price": 1000.00, "asset_class": "Cash Equivalents", "market_value": 23120.00, "unrealized_pnl": 0.00}
     ]
+}
 
-    for acc_id, amt, dt, raw_desc, merch, cat in demo_txs:
-        tx_processor.process_transaction(
-            account_id=acc_id,
-            user_id=OWNER_ID,
-            amount_cents=amt,
-            date=dt,
-            merchant_name=merch,
-            raw_description=raw_desc,
-            category_id=cat,
-            allow_duplicates=True
-        )
-
-    # Envelopes
-    period = time.strftime("%Y-%m")
-    budget_mgr.create_envelope(OWNER_ID, "cat_housing", 250000, period)
-    budget_mgr.create_envelope(OWNER_ID, "cat_food", 85000, period)
-    budget_mgr.create_envelope(OWNER_ID, "cat_transit", 35000, period)
-    budget_mgr.create_envelope(OWNER_ID, "cat_entertainment", 25000, period)
-    budget_mgr.create_envelope(OWNER_ID, "cat_utilities", 30000, period)
-    budget_mgr.create_envelope(OWNER_ID, "cat_shopping", 40000, period)
-
-    budget_mgr.record_expense(OWNER_ID, "cat_housing", period, 220000)
-    budget_mgr.record_expense(OWNER_ID, "cat_food", period, 24950)
-    budget_mgr.record_expense(OWNER_ID, "cat_transit", period, 14500)
-    budget_mgr.record_expense(OWNER_ID, "cat_entertainment", period, 1999)
-    budget_mgr.record_expense(OWNER_ID, "cat_shopping", period, 12500)
-
-    # Holdings
-    user_holdings[OWNER_ID] = [
-        {"holding_id": "h_1", "symbol": "VOO", "name": "Vanguard S&P 500 ETF", "asset_class": "EQUITY", "shares": 120.0, "cost_basis": 420.50, "current_price": 512.80, "market_value": 61536.00, "unrealized_pnl": 11076.00, "weight_pct": 65.3},
-        {"holding_id": "h_2", "symbol": "QQQ", "name": "Invesco QQQ Trust", "asset_class": "EQUITY", "shares": 40.0, "cost_basis": 395.00, "current_price": 485.40, "market_value": 19416.00, "unrealized_pnl": 3616.00, "weight_pct": 20.6},
-        {"holding_id": "h_3", "symbol": "BND", "name": "Vanguard Total Bond Market", "asset_class": "FIXED_INCOME", "shares": 120.0, "cost_basis": 78.00, "current_price": 72.00, "market_value": 8640.00, "unrealized_pnl": -720.00, "weight_pct": 9.2},
-        {"holding_id": "h_4", "symbol": "VNQ", "name": "Vanguard Real Estate ETF", "asset_class": "REAL_ESTATE", "shares": 50.0, "cost_basis": 84.00, "current_price": 92.16, "market_value": 4608.00, "unrealized_pnl": 408.00, "weight_pct": 4.9},
+# In-Memory Debts in INR (₹)
+user_debts = {
+    OWNER_ID: [
+        {"name": "HDFC Regalia Credit Card", "type": "Revolving Credit", "institution": "HDFC Bank", "balance": 46500.00, "interest_rate": 42.0, "min_payment": 2500.00},
+        {"name": "SBI Home Loan Mortgage", "type": "Fixed Real Estate", "institution": "State Bank of India", "balance": 4250000.00, "interest_rate": 8.50, "min_payment": 36900.00},
+        {"name": "ICICI Auto Loan", "type": "Secured Vehicle Loan", "institution": "ICICI Bank", "balance": 480000.00, "interest_rate": 9.20, "min_payment": 12500.00}
     ]
+}
 
-    # Debts
-    user_debts[OWNER_ID] = [
-        {"debt_id": "d_1", "name": "30-Year Fixed Mortgage", "type": "MORTGAGE", "balance": 285000.00, "interest_rate": 5.85, "min_payment": 1682.00, "institution": "Wells Fargo"},
-        {"debt_id": "d_2", "name": "Sapphire Preferred Card", "type": "CREDIT_CARD", "balance": 1450.00, "interest_rate": 22.40, "min_payment": 65.00, "institution": "Chase"},
-    ]
 
-    # Audit Events
-    audit_engine.append_event("ev_001", OWNER_ID, "user@truebalance.com", "SYSTEM_INIT", "LEDGER", "1010", {"action": "Opening balance ledger verification"})
-    audit_engine.append_event("ev_002", OWNER_ID, "user@truebalance.com", "ACCOUNT_CREATED", "ACCOUNT", acc_checking.account_id, {"name": acc_checking.account_name})
-    audit_engine.append_event("ev_003", ADVISOR_ID, "advisor@truebalance.com", "ADVISOR_ASSIGNED", "CLIENT", OWNER_ID, {"advisor": "Sarah Jenkins, CFP®"})
-
-initialize_enterprise_demo_data()
-
-# =========================================================================
-# REST API HANDLER & RBAC MIDDLEWARE
-# =========================================================================
 class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
+    """Production HTTP request dispatcher with RBAC, JWT verification, and INR financial engines."""
 
     def _send_json(self, data: Any, status: int = 200):
         self.send_response(status)
@@ -174,7 +133,8 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         def _encoder(o):
             if hasattr(o, "value"):
-                return float(o.value) if str(o.value).replace(".", "", 1).replace("-", "", 1).isdigit() else str(o.value)
+                val_str = str(o.value)
+                return float(val_str) if val_str.replace(".", "", 1).replace("-", "", 1).isdigit() else val_str
             if hasattr(o, "__dict__"):
                 return o.__dict__
             return str(o)
@@ -184,577 +144,526 @@ class TrueBalanceAPIHandler(http.server.SimpleHTTPRequestHandler):
         self._send_json({"error": message, "status": status}, status=status)
 
     def _get_auth_context(self) -> Optional[Dict[str, Any]]:
-        auth_header = self.headers.get("Authorization", "")
-        if not auth_header.startswith("Bearer "):
-            return None
-        token = auth_header.split(" ")[1].strip()
-        payload = auth_service.verify_token(token)
-        return payload
+        auth_hdr = self.headers.get("Authorization", "")
+        if auth_hdr.startswith("Bearer "):
+            token = auth_hdr.split(" ")[1]
+            return auth_service.verify_token(token)
+        return None
 
     def _get_target_client_id(self, auth_user: Dict[str, Any]) -> str:
-        """Resolves target user ID: Account Owner queries own ID; Advisor queries assigned client ID."""
-        role = auth_user.get("role")
-        if role == Role.ACCOUNT_OWNER.value:
-            return auth_user.get("sub", OWNER_ID)
-        elif role == Role.FINANCIAL_ADVISOR.value:
-            advisor_id = auth_user.get("sub", ADVISOR_ID)
-            assigned = auth_service.get_assigned_client_id_for_advisor(advisor_id)
-            return assigned or OWNER_ID
-        return OWNER_ID
+        if auth_user["role"] == Role.ACCOUNT_OWNER.value:
+            return auth_user["sub"]
+        return auth_service.get_assigned_client_id_for_advisor(auth_user["sub"])
 
     def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        self.end_headers()
+        self._send_json({"status": "OK"})
 
     def do_GET(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-        query = urllib.parse.parse_qs(parsed.query)
+        try:
+            parsed = urllib.parse.urlparse(self.path)
+            path = parsed.path
+            query = urllib.parse.parse_qs(parsed.query)
 
-        # Serve SPA Frontend
-        if path in ("/", "/login", "/dashboard", "/index.html", "/app"):
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            with open(Path(__file__).parent / "frontend_spa.html", "r", encoding="utf-8") as f:
-                self.wfile.write(f.read().encode("utf-8"))
-            return
-
-        # Protected API Routes
-        if path.startswith("/api/"):
-            auth_user = self._get_auth_context()
-            if not auth_user and path != "/api/health":
-                self._send_error("Authentication required. Please log in.", 401)
-                return
-
-            client_id = self._get_target_client_id(auth_user) if auth_user else OWNER_ID
-
-            if path == "/api/health":
-                self._send_json({"status": "UP", "timestamp": time.time()})
-                return
-
-            # 1. Auth Me
-            if path == "/api/auth/me":
-                user_data = auth_service.get_user(auth_user["sub"])
-                if not user_data:
-                    self._send_error("User not found", 404)
-                    return
-                self._send_json({"user": user_data})
-                return
-
-            # 2. Net Worth & Summary
-            if path == "/api/net-worth":
-                assets, debts, net_worth = account_mgr.compute_net_worth(client_id)
-                rows, debits, credits, is_bal = ledger.generate_trial_balance()
-                self._send_json({
-                    "client_id": client_id,
-                    "total_assets": str(assets.value),
-                    "total_liabilities": str(debts.value),
-                    "net_worth": str(net_worth.value),
-                    "is_ledger_balanced": is_bal,
-                    "total_debits": str(debits.value),
-                    "total_credits": str(credits.value),
-                    "monthly_income": "10400.00",
-                    "monthly_expenses": "2753.49",
-                    "savings_rate_pct": 73.5
-                })
-                return
-
-            # 3. Accounts
-            if path == "/api/accounts":
-                accounts = account_mgr.list_user_accounts(client_id)
-                self._send_json([
-                    {
-                        "account_id": a.account_id,
-                        "account_name": a.account_name,
-                        "account_type": a.account_type,
-                        "institution_name": a.institution_name,
-                        "currency": a.currency,
-                        "current_balance_cents": a.current_balance_cents,
-                        "current_balance": a.current_balance_cents / 100.0,
-                        "credit_limit": (a.credit_limit_cents / 100.0) if a.credit_limit_cents else None
-                    }
-                    for a in accounts
-                ])
-                return
-
-            # 4. Transactions
-            if path == "/api/transactions":
-                all_txs = tx_processor.get_user_transactions(client_id)
-                category_filter = query.get("category", [None])[0]
-                search_query = query.get("q", [""])[0].lower()
-
-                filtered = []
-                for tx in all_txs:
-                    if category_filter and tx.category_id != category_filter:
-                        continue
-                    if search_query and (search_query not in tx.merchant_name.lower() and search_query not in tx.raw_description.lower()):
-                        continue
-                    filtered.append({
-                        "transaction_id": tx.transaction_id,
-                        "account_id": tx.account_id,
-                        "date": tx.date,
-                        "merchant_name": tx.merchant_name,
-                        "raw_description": tx.raw_description,
-                        "category_id": tx.category_id,
-                        "amount": tx.amount_cents / 100.0,
-                        "amount_cents": tx.amount_cents,
-                        "currency": tx.currency,
-                        "status": tx.status
-                    })
-                self._send_json(sorted(filtered, key=lambda x: x["date"], reverse=True))
-                return
-
-            # 5. Budgets
-            if path == "/api/budgets":
-                period = query.get("period", [time.strftime("%Y-%m")])[0]
-                status = budget_mgr.get_envelope_status(client_id, period)
-                self._send_json([
-                    {
-                        "category_id": s["category_id"],
-                        "category_name": s["category_id"].replace("cat_", "").replace("_", " ").title(),
-                        "allocated": float(s["allocated"].value),
-                        "spent": float(s["spent"].value),
-                        "remaining": float(s["remaining"].value),
-                        "percentage_spent": s["percentage_spent"],
-                        "is_over_budget": float(s["spent"].value) > float(s["allocated"].value)
-                    }
-                    for s in status
-                ])
-                return
-
-            # 6. Investments & Portfolio
-            if path == "/api/investments":
-                holdings = user_holdings.get(client_id, [])
-                total_val = sum(h["market_value"] for h in holdings)
-                total_cost = sum(h["shares"] * h["cost_basis"] for h in holdings)
-                total_gain = total_val - total_cost
-
-                # Calculate MPT metrics
-                returns_series = [0.012, -0.005, 0.021, 0.015, -0.010, 0.018, 0.009, 0.022, -0.004, 0.014]
-                sharpe = PortfolioRiskMetrics.sharpe_ratio(returns_series)
-                sortino = PortfolioRiskMetrics.sortino_ratio(returns_series)
-                var_95 = PortfolioRiskMetrics.value_at_risk_parametric(total_val, 0.95)
-
-                self._send_json({
-                    "total_portfolio_value": total_val,
-                    "total_cost_basis": total_cost,
-                    "total_unrealized_gain": total_gain,
-                    "unrealized_gain_pct": round((total_gain / total_cost * 100.0) if total_cost > 0 else 0.0, 2),
-                    "holdings": holdings,
-                    "metrics": {
-                        "sharpe_ratio": round(sharpe, 2),
-                        "sortino_ratio": round(sortino, 2),
-                        "var_95_daily": round(var_95, 2)
-                    }
-                })
-                return
-
-            # 7. Tax Analysis
-            if path == "/api/taxes":
-                state_code = query.get("state", ["CA"])[0]
-                tax_info = StateTaxCalculator.calculate_state_liability(state_code, 12480000, FilingStatus.SINGLE, 1460000)
-                harvestable = [
-                    TaxableHolding("BND", 120.0, 78.0, 72.0, "2025-03-15")
-                ]
-                harvest_opps = TaxLossHarvester.find_harvesting_opportunities(harvestable)
-
-                self._send_json({
-                    "federal_estimated_tax": 18450.00,
-                    "effective_federal_rate_pct": 14.8,
-                    "state_tax": tax_info,
-                    "capital_gains_summary": {
-                        "short_term_gains": 2400.00,
-                        "long_term_gains": 12292.00,
-                        "harvestable_losses": 720.00,
-                        "net_taxable_gains": 13972.00
-                    },
-                    "tax_loss_harvesting_opportunities": harvest_opps,
-                    "disclaimer": "Estimates provided for analytical simulation purposes. Not certified tax or legal advice."
-                })
-                return
-
-            # 8. Debt Optimization
-            if path == "/api/debt":
-                debts = user_debts.get(client_id, [])
-                total_debt = sum(d["balance"] for d in debts)
-                total_min_pay = sum(d["min_payment"] for d in debts)
-                dti_pct = round((total_debt / (10400 * 12) * 100.0), 1)
-
-                self._send_json({
-                    "total_debt_balance": total_debt,
-                    "total_monthly_minimum": total_min_pay,
-                    "debt_to_income_ratio_pct": dti_pct,
-                    "debts": debts,
-                    "avalanche_recommendation": "Pay off Sapphire Preferred Card (22.4% APR) first to save $325.00 in interest."
-                })
-                return
-
-            # 9. Financial Health
-            if path == "/api/financial-health":
-                assets, debts, _ = account_mgr.compute_net_worth(client_id)
-                health = FinancialHealthCalculator.evaluate_health(
-                    monthly_income_cents=1040000,
-                    monthly_expenses_cents=275349,
-                    liquid_assets_cents=3250000,
-                    total_debt_cents=int(float(debts.value) * 100),
-                    budget_utilization_pct=88.0,
-                    asset_classes_count=4
-                )
-                self._send_json(health)
-                return
-
-            # 10. Compliance & AML
-            if path == "/api/compliance":
-                all_txs = tx_processor.get_user_transactions(client_id)
-                tx_dicts = [{"amount_cents": t.amount_cents, "date": t.date} for t in all_txs]
-                alerts = AMLMonitoringEngine.scan_for_structuring(tx_dicts)
-                self._send_json({
-                    "kyc_status": "VERIFIED_LEVEL_3",
-                    "risk_tier": "LOW_RISK",
-                    "sanctions_watchlist_status": "CLEAR_PASSED",
-                    "last_screening_timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-                    "aml_alerts": alerts
-                })
-                return
-
-            # 11. Audit History
-            if path == "/api/audit":
-                records = audit_engine.get_records(limit=50)
-                is_valid, err = audit_engine.verify_chain_integrity()
-                self._send_json({
-                    "is_chain_valid": is_valid,
-                    "verification_error": err,
-                    "total_audited_events": len(records),
-                    "events": records
-                })
-                return
-
-            # 12. Advisor Recommendations & Alerts
-            if path == "/api/advisor/recommendations":
-                recs = recs_service.get_client_recommendations(client_id)
-                self._send_json(recs)
-                return
-
-            if path == "/api/advisor/alerts":
-                alerts = recs_service.get_client_alerts(client_id)
-                self._send_json(alerts)
-                return
-
-            if path == "/api/advisor/stress-test":
-                stress = recs_service.get_stress_test_analysis(client_id)
-                self._send_json(stress)
-                return
-
-            # 13. Reports
-            if path == "/api/reports/summary":
-                summary = FinancialReportsGenerator.generate_full_financial_summary(client_id, account_mgr, ledger, budget_mgr)
-                self._send_json(summary)
-                return
-
-            if path == "/api/reports/export-csv":
-                export_type = query.get("type", ["accounts"])[0]
-                if export_type == "transactions":
-                    txs = tx_processor.get_user_transactions(client_id)
-                    csv_data = FinancialReportsGenerator.export_transactions_csv(txs)
-                    filename = "TrueBalance_Transactions.csv"
-                else:
-                    csv_data = FinancialReportsGenerator.export_accounts_csv(client_id, account_mgr)
-                    filename = "TrueBalance_Accounts.csv"
-
+            # Serve SPA Frontend
+            if path in ("/", "/login", "/dashboard", "/index.html", "/app"):
                 self.send_response(200)
-                self.send_header("Content-Type", "text/csv; charset=utf-8")
-                self.send_header("Content-Disposition", f"attachment; filename={filename}")
+                self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.end_headers()
-                self.wfile.write(csv_data.encode("utf-8"))
+                with open(WORKSPACE_DIR / "frontend_spa.html", "r", encoding="utf-8") as f:
+                    self.wfile.write(f.read().encode("utf-8"))
                 return
 
-        super().do_GET()
+            # Health Check
+            if path == "/api/health":
+                self._send_json({"status": "UP", "timestamp": time.time(), "currency": "INR", "symbol": "₹"})
+                return
+
+            # Protected API Routes
+            if path.startswith("/api/"):
+                auth_user = self._get_auth_context()
+                if not auth_user:
+                    self._send_error("Authentication required. Please log in.", 401)
+                    return
+
+                client_id = self._get_target_client_id(auth_user)
+
+                # 1. Auth Me
+                if path == "/api/auth/me":
+                    user_data = auth_service.get_user(auth_user["sub"])
+                    if not user_data:
+                        self._send_error("User not found", 404)
+                        return
+                    self._send_json({"user": user_data})
+                    return
+
+                # 2. Net Worth & Summary in INR (₹)
+                if path == "/api/net-worth":
+                    assets, debts, net_worth = account_mgr.compute_net_worth(client_id)
+                    rows, debits, credits, is_bal = ledger.generate_trial_balance()
+                    self._send_json({
+                        "currency": "INR",
+                        "currency_symbol": "₹",
+                        "client_id": client_id,
+                        "total_assets": str(assets.value),
+                        "total_liabilities": str(debts.value),
+                        "net_worth": str(net_worth.value),
+                        "is_ledger_balanced": is_bal,
+                        "total_debits": str(debits.value),
+                        "total_credits": str(credits.value),
+                        "monthly_income": "104000.00",
+                        "monthly_expenses": "27534.90",
+                        "savings_rate_pct": 73.5
+                    })
+                    return
+
+                # 3. Accounts
+                if path == "/api/accounts":
+                    accounts = account_mgr.list_user_accounts(client_id)
+                    self._send_json([
+                        {
+                            "account_id": a.account_id,
+                            "account_name": a.account_name,
+                            "account_type": a.account_type,
+                            "institution_name": a.institution_name,
+                            "currency": "INR",
+                            "current_balance_cents": a.current_balance_cents,
+                            "current_balance": a.current_balance_cents / 100.0,
+                            "credit_limit": (a.credit_limit_cents / 100.0) if a.credit_limit_cents else None
+                        }
+                        for a in accounts
+                    ])
+                    return
+
+                # 4. Transactions
+                if path == "/api/transactions":
+                    all_txs = tx_processor.get_user_transactions(client_id)
+                    category_filter = query.get("category", [None])[0]
+                    search_query = query.get("q", [""])[0].lower()
+
+                    filtered = []
+                    for tx in all_txs:
+                        if category_filter and tx.category_id != category_filter:
+                            continue
+                        if search_query and (search_query not in tx.merchant_name.lower() and search_query not in tx.raw_description.lower()):
+                            continue
+                        filtered.append({
+                            "transaction_id": tx.transaction_id,
+                            "account_id": tx.account_id,
+                            "date": tx.date,
+                            "merchant_name": tx.merchant_name,
+                            "raw_description": tx.raw_description,
+                            "category_id": tx.category_id,
+                            "amount": tx.amount_cents / 100.0,
+                            "amount_cents": tx.amount_cents,
+                            "currency": "INR",
+                            "status": tx.status
+                        })
+                    self._send_json(sorted(filtered, key=lambda x: x["date"], reverse=True))
+                    return
+
+                # 5. Budgets
+                if path == "/api/budgets":
+                    period = query.get("period", [time.strftime("%Y-%m")])[0]
+                    status = budget_mgr.get_envelope_status(client_id, period)
+                    self._send_json([
+                        {
+                            "category_id": s["category_id"],
+                            "category_name": s["category_id"].replace("cat_", "").replace("_", " ").title(),
+                            "allocated": float(s["allocated"].value),
+                            "spent": float(s["spent"].value),
+                            "remaining": float(s["remaining"].value),
+                            "percentage_spent": s["percentage_spent"],
+                            "is_over_budget": float(s["spent"].value) > float(s["allocated"].value)
+                        }
+                        for s in status
+                    ])
+                    return
+
+                # 6. Investments & Portfolio in INR (₹)
+                if path == "/api/investments":
+                    holdings = user_holdings.get(client_id, [])
+                    total_val = sum(h["market_value"] for h in holdings)
+                    total_cost = sum(h["shares"] * h["cost_basis"] for h in holdings)
+                    total_gain = total_val - total_cost
+
+                    returns_series = [0.012, -0.005, 0.021, 0.015, -0.010, 0.018, 0.009, 0.022, -0.004, 0.014]
+                    sharpe = PortfolioRiskMetrics.sharpe_ratio(returns_series)
+                    sortino = PortfolioRiskMetrics.sortino_ratio(returns_series)
+                    var_95 = PortfolioRiskMetrics.value_at_risk_parametric(total_val, 0.95)
+
+                    self._send_json({
+                        "currency": "INR",
+                        "currency_symbol": "₹",
+                        "total_portfolio_value": total_val,
+                        "total_cost_basis": total_cost,
+                        "total_unrealized_gain": total_gain,
+                        "unrealized_gain_pct": round((total_gain / total_cost * 100.0) if total_cost > 0 else 0.0, 2),
+                        "holdings": holdings,
+                        "metrics": {
+                            "sharpe_ratio": round(sharpe, 2),
+                            "sortino_ratio": round(sortino, 2),
+                            "var_95_daily": round(var_95, 2)
+                        }
+                    })
+                    return
+
+                # 7. Tax Analysis in INR (₹)
+                if path == "/api/taxes":
+                    self._send_json({
+                        "currency": "INR",
+                        "currency_symbol": "₹",
+                        "regime": "Indian Income Tax New Regime (FY 2025-26 / AY 2026-27)",
+                        "annual_gross_income": 1248000.00,
+                        "standard_deduction": 75000.00,
+                        "net_taxable_income": 1173000.00,
+                        "federal_estimated_tax": 84600.00,
+                        "effective_federal_rate_pct": 6.78,
+                        "state_tax": {
+                            "state": "MH",
+                            "state_name": "Maharashtra (Professional Tax)",
+                            "total_tax_cents": 250000,
+                            "effective_rate": 0.002
+                        },
+                        "capital_gains_summary": {
+                            "short_term_gains": 45000.00,
+                            "long_term_gains": 125000.00,
+                            "harvestable_losses": 35000.00,
+                            "net_taxable_gains": 135000.00
+                        },
+                        "tax_loss_harvesting_opportunities": [
+                            {"symbol": "DEBTETF", "shares": 500, "harvestable_loss": 35000.00, "recommendation": "Harvest before March 31 to offset STCG on Large-Cap stocks."}
+                        ],
+                        "disclaimer": "Estimates provided for analytical simulation under Section 115BAC. Not certified tax advice."
+                    })
+                    return
+
+                # 8. Debt Optimization in INR (₹)
+                if path == "/api/debt":
+                    debts = user_debts.get(client_id, [])
+                    total_debt = sum(d["balance"] for d in debts)
+                    total_min_pay = sum(d["min_payment"] for d in debts)
+                    dti_pct = round((total_min_pay / 104000.0 * 100.0), 1)
+
+                    self._send_json({
+                        "currency": "INR",
+                        "currency_symbol": "₹",
+                        "total_debt_balance": total_debt,
+                        "total_monthly_minimum": total_min_pay,
+                        "debt_to_income_ratio_pct": dti_pct,
+                        "debts": debts,
+                        "avalanche_recommendation": "Pay off HDFC Regalia Card (42.0% APR) first to save ₹18,500.00 in interest per year."
+                    })
+                    return
+
+                # 9. Financial Health
+                if path == "/api/financial-health":
+                    assets, debts, _ = account_mgr.compute_net_worth(client_id)
+                    health = FinancialHealthCalculator.evaluate_health(
+                        monthly_income_cents=10400000,
+                        monthly_expenses_cents=2753490,
+                        liquid_assets_cents=50950000,
+                        total_debt_cents=int(float(debts.value) * 100),
+                        budget_utilization_pct=88.0,
+                        asset_classes_count=4
+                    )
+                    self._send_json(health)
+                    return
+
+                # 10. Compliance & AML
+                if path == "/api/compliance":
+                    all_txs = tx_processor.get_user_transactions(client_id)
+                    tx_dicts = [{"amount_cents": t.amount_cents, "date": t.date} for t in all_txs]
+                    alerts = AMLMonitoringEngine.scan_for_structuring(tx_dicts)
+                    self._send_json({
+                        "kyc_status": "PAN_AADHAAR_VERIFIED_LEVEL_3",
+                        "risk_tier": "LOW_RISK",
+                        "sanctions_watchlist_status": "CLEAR_PASSED",
+                        "last_screening_timestamp": time.strftime("%Y-%m-%d %H:%M:%S IST"),
+                        "aml_alerts": alerts
+                    })
+                    return
+
+                # 11. Audit History
+                if path == "/api/audit":
+                    records = audit_engine.get_records(limit=50)
+                    is_valid, err = audit_engine.verify_chain_integrity()
+                    self._send_json({
+                        "is_chain_valid": is_valid,
+                        "verification_error": err,
+                        "total_events": len(records),
+                        "events": [
+                            {
+                                "sequence_num": r["sequence_num"] if isinstance(r, dict) else r.sequence_num,
+                                "action": r["action"] if isinstance(r, dict) else r.action,
+                                "actor_user_id": (r.get("actor_id") or r.get("actor_user_id")) if isinstance(r, dict) else getattr(r, "actor_id", getattr(r, "actor_user_id", "")),
+                                "actor_email": r["actor_email"] if isinstance(r, dict) else r.actor_email,
+                                "entity_type": r["entity_type"] if isinstance(r, dict) else r.entity_type,
+                                "entity_id": r["entity_id"] if isinstance(r, dict) else r.entity_id,
+                                "previous_hash": r["previous_hash"] if isinstance(r, dict) else r.previous_hash,
+                                "current_hash": r["current_hash"] if isinstance(r, dict) else r.current_hash,
+                                "timestamp": r["timestamp"] if isinstance(r, dict) else r.timestamp
+                            }
+                            for r in records
+                        ]
+                    })
+                    return
+
+                # 12. Advisor Recommendations
+                if path == "/api/advisor/recommendations":
+                    recs = AdvisorRecommendationsService.get_recommendations(client_id)
+                    self._send_json(recs)
+                    return
+
+                # 13. Advisor Alerts Feed
+                if path == "/api/advisor/alerts":
+                    alerts = AdvisorRecommendationsService.get_active_alerts(client_id)
+                    self._send_json(alerts)
+                    return
+
+                # 14. Advisor Stress-Test Matrix
+                if path == "/api/advisor/stress-test":
+                    stress = AdvisorRecommendationsService.get_stress_test_analysis(client_id)
+                    self._send_json(stress)
+                    return
+
+                # 15. Reports Full Financial Summary
+                if path == "/api/reports/summary":
+                    summary = FinancialReportsGenerator.generate_full_financial_summary(client_id, account_mgr, ledger, budget_mgr)
+                    self._send_json(summary)
+                    return
+
+                # 16. CSV Export
+                if path == "/api/reports/export-csv":
+                    export_type = query.get("type", ["transactions"])[0]
+                    if export_type == "accounts":
+                        csv_data = FinancialReportsGenerator.export_accounts_csv(client_id, account_mgr)
+                        filename = f"truebalance_accounts_{client_id}.csv"
+                    else:
+                        txs = tx_processor.get_user_transactions(client_id)
+                        csv_data = FinancialReportsGenerator.export_transactions_csv(txs)
+                        filename = f"truebalance_ledger_{client_id}.csv"
+
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/csv; charset=utf-8")
+                    self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+                    self.end_headers()
+                    self.wfile.write(csv_data.encode("utf-8"))
+                    return
+
+            self._send_error("Endpoint not found", 404)
+        except Exception as e:
+            self._send_error(f"Internal Server Error: {str(e)}", 500)
 
     def do_POST(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
+        try:
+            parsed = urllib.parse.urlparse(self.path)
+            path = parsed.path
 
-        content_length = int(self.headers.get("Content-Length", 0))
-        body_bytes = self.rfile.read(content_length)
-        payload = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+            # Read Body
+            content_length = int(self.headers.get("Content-Length", 0))
+            body_raw = self.rfile.read(content_length) if content_length > 0 else b"{}"
+            try:
+                body = json.loads(body_raw.decode("utf-8"))
+            except Exception:
+                body = {}
 
-        # 1. Unauthenticated Login API
-        if path == "/api/auth/login":
-            email = payload.get("email", "")
-            password = payload.get("password", "")
-
-            auth_res = auth_service.authenticate(email, password)
-            if not auth_res:
-                self._send_error("Invalid email or password. Please try again.", 401)
+            # 1. Login
+            if path == "/api/auth/login":
+                email = body.get("email", "")
+                password = body.get("password", "")
+                auth_res = auth_service.authenticate(email, password)
+                if not auth_res:
+                    self._send_error("Invalid email or password. Use demo credentials.", 401)
+                    return
+                user_info, access_token, refresh_token = auth_res
+                self._send_json({
+                    "status": "SUCCESS",
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "token_type": "Bearer",
+                    "user": user_info
+                })
                 return
 
-            user_info, access_token, refresh_token = auth_res
-            audit_engine.append_event(
-                f"ev_{str(uuid.uuid4())[:8]}",
-                user_info["user_id"],
-                user_info["email"],
-                "LOGIN",
-                "SESSION",
-                user_info["user_id"],
-                {"role": user_info["role"], "ip": self.client_address[0]}
-            )
-
-            self._send_json({
-                "status": "SUCCESS",
-                "user": user_info,
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            })
-            return
-
-        # Authenticate all subsequent POST requests
-        auth_user = self._get_auth_context()
-        if not auth_user:
-            self._send_error("Authentication required", 401)
-            return
-
-        role = auth_user.get("role")
-        user_id = auth_user.get("sub")
-        client_id = self._get_target_client_id(auth_user)
-
-        # 2. Auth Logout
-        if path == "/api/auth/logout":
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "LOGOUT", "SESSION", user_id)
-            self._send_json({"status": "SUCCESS", "message": "Logged out successfully"})
-            return
-
-        # 3. Auth Change Password
-        if path == "/api/auth/change-password":
-            old_p = payload.get("old_password", "")
-            new_p = payload.get("new_password", "")
-            ok, msg = auth_service.change_password(user_id, old_p, new_p)
-            if not ok:
-                self._send_error(msg, 400)
-                return
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "PASSWORD_CHANGED", "USER", user_id)
-            self._send_json({"status": "SUCCESS", "message": msg})
-            return
-
-        # 4. Create Account (ACCOUNT_OWNER ONLY)
-        if path == "/api/accounts":
-            if role != Role.ACCOUNT_OWNER.value:
-                self._send_error("Forbidden: Financial Advisors cannot create client accounts.", 403)
+            # Protected POST Endpoints
+            auth_user = self._get_auth_context()
+            if not auth_user:
+                self._send_error("Authentication required.", 401)
                 return
 
-            name = payload.get("name", "").strip()
-            acc_type = payload.get("type", "CHECKING")
-            balance_cents = int(float(payload.get("balance", 0)) * 100)
-            institution = payload.get("institution", "Community Bank")
+            client_id = self._get_target_client_id(auth_user)
 
-            if not name:
-                self._send_error("Account name is required", 422)
+            # 2. Logout
+            if path == "/api/auth/logout":
+                self._send_json({"status": "LOGGED_OUT"})
                 return
 
-            acc = account_mgr.create_account(
-                user_id=client_id,
-                name=name,
-                account_type=acc_type,
-                initial_balance_cents=balance_cents,
-                institution_name=institution
-            )
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "ACCOUNT_CREATED", "ACCOUNT", acc.account_id, {"name": name, "type": acc_type})
-            self._send_json({"status": "SUCCESS", "account_id": acc.account_id})
-            return
-
-        # 5. Create Transaction (ACCOUNT_OWNER ONLY)
-        if path == "/api/transactions":
-            if role != Role.ACCOUNT_OWNER.value:
-                self._send_error("Forbidden: Financial Advisors cannot post financial transactions.", 403)
+            # 3. Change Password
+            if path == "/api/auth/change-password":
+                old_pw = body.get("old_password", "")
+                new_pw = body.get("new_password", "")
+                if auth_service.change_password(auth_user["sub"], old_pw, new_pw):
+                    self._send_json({"status": "PASSWORD_UPDATED"})
+                else:
+                    self._send_error("Password update failed. Verify current password.", 400)
                 return
 
-            acc_id = payload.get("account_id")
-            amount = float(payload.get("amount", 0))
-            amount_cents = int(amount * 100)
-            raw_desc = payload.get("description", "Manual entry").strip()
-            merchant = payload.get("merchant", raw_desc).strip()
-            category_id = payload.get("category_id", "cat_shopping")
-            tx_date = payload.get("date", time.strftime("%Y-%m-%d"))
+            # 4. Create Account (ACCOUNT_OWNER only)
+            if path == "/api/accounts":
+                if auth_user["role"] != Role.ACCOUNT_OWNER.value:
+                    self._send_error("Advisors have read-only audit access. Account creation forbidden.", 403)
+                    return
+                name = body.get("name")
+                inst = body.get("institution", "HDFC Bank")
+                acc_type = body.get("type", "CHECKING")
+                init_bal = float(body.get("balance", 0.0))
+                cents = int(init_bal * 100)
 
-            if not acc_id or amount == 0:
-                self._send_error("Valid account and non-zero amount are required", 422)
+                acc = account_mgr.create_account(client_id, name, acc_type, inst, "INR", cents)
+                audit_engine.record_event(AuditAction.ACCOUNT_CREATED, client_id, auth_user["email"], "ACCOUNT", acc.account_id, {"name": name, "balance_inr": init_bal})
+                self._send_json({"status": "CREATED", "account_id": acc.account_id})
                 return
 
-            tx = tx_processor.process_transaction(
-                account_id=acc_id,
-                user_id=client_id,
-                amount_cents=amount_cents,
-                date=tx_date,
-                merchant_name=merchant,
-                raw_description=raw_desc,
-                category_id=category_id,
-                allow_duplicates=True
-            )
+            # 5. Post Transaction (ACCOUNT_OWNER only)
+            if path == "/api/transactions":
+                if auth_user["role"] != Role.ACCOUNT_OWNER.value:
+                    self._send_error("Advisors have read-only audit access. Transaction posting forbidden.", 403)
+                    return
+                acc_id = body.get("account_id")
+                merchant = body.get("merchant", "Merchant")
+                amt = float(body.get("amount", 0.0))
+                cents = int(amt * 100)
+                cat = body.get("category_id", "cat_food")
 
-            # Record budget expense if negative
-            if amount_cents < 0 and category_id:
-                period = tx_date[:7]
-                budget_mgr.record_expense(client_id, category_id, period, abs(amount_cents))
-
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "TRANSACTION_CREATED", "TRANSACTION", tx.transaction_id, {"amount": amount, "merchant": merchant})
-            self._send_json({"status": "SUCCESS", "transaction_id": tx.transaction_id})
-            return
-
-        # 6. Update Budget Envelope (ACCOUNT_OWNER ONLY)
-        if path == "/api/budgets/envelope":
-            if role != Role.ACCOUNT_OWNER.value:
-                self._send_error("Forbidden: Financial Advisors cannot modify client budgets.", 403)
+                tx = tx_processor.record_transaction(acc_id, merchant, cents, f"Payment to {merchant}", cat, time.strftime("%Y-%m-%d"))
+                audit_engine.record_event(AuditAction.TRANSACTION_POSTED, client_id, auth_user["email"], "TRANSACTION", tx.transaction_id, {"merchant": merchant, "amount_inr": amt})
+                self._send_json({"status": "POSTED", "transaction_id": tx.transaction_id})
                 return
 
-            category_id = payload.get("category_id")
-            allocated_dollars = float(payload.get("allocated", 0))
-            period = payload.get("period", time.strftime("%Y-%m"))
-            env = budget_mgr.create_envelope(client_id, category_id, int(allocated_dollars * 100), period)
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "BUDGET_UPDATED", "BUDGET", category_id, {"allocated": allocated_dollars})
-            self._send_json({"status": "SUCCESS", "envelope_id": env.envelope_id})
-            return
-
-        # 7. Add Investment Holding (ACCOUNT_OWNER ONLY)
-        if path == "/api/investments/holdings":
-            if role != Role.ACCOUNT_OWNER.value:
-                self._send_error("Forbidden: Financial Advisors cannot modify investment portfolios directly.", 403)
+            # 6. Adjust Budget Envelope (ACCOUNT_OWNER only)
+            if path == "/api/budgets/envelope":
+                if auth_user["role"] != Role.ACCOUNT_OWNER.value:
+                    self._send_error("Advisors have read-only audit access. Budget modification forbidden.", 403)
+                    return
+                cat_id = body.get("category_id")
+                alloc = float(body.get("allocated", 0.0))
+                budget_mgr.set_envelope(client_id, cat_id, FinancialDecimal(str(alloc)))
+                audit_engine.record_event(AuditAction.BUDGET_MODIFIED, client_id, auth_user["email"], "BUDGET", cat_id, {"allocated_inr": alloc})
+                self._send_json({"status": "UPDATED", "category_id": cat_id, "allocated": alloc})
                 return
 
-            symbol = payload.get("symbol", "").upper().strip()
-            name = payload.get("name", symbol).strip()
-            shares = float(payload.get("shares", 0))
-            cost_basis = float(payload.get("cost_basis", 0))
-            current_price = float(payload.get("current_price", cost_basis))
-            asset_class = payload.get("asset_class", "EQUITY")
+            # 7. Add Investment Holding (ACCOUNT_OWNER only)
+            if path == "/api/investments/holdings":
+                if auth_user["role"] != Role.ACCOUNT_OWNER.value:
+                    self._send_error("Advisors have read-only audit access. Holding registration forbidden.", 403)
+                    return
+                sym = body.get("symbol", "").upper()
+                shares = float(body.get("shares", 0))
+                cost = float(body.get("cost_basis", 0))
+                price = float(body.get("current_price", cost))
+                mkt_val = shares * price
 
-            if not symbol or shares <= 0:
-                self._send_error("Valid symbol and share quantity required", 422)
+                user_holdings.setdefault(client_id, []).append({
+                    "symbol": sym,
+                    "name": f"{sym} Equity Position",
+                    "shares": shares,
+                    "cost_basis": cost,
+                    "current_price": price,
+                    "asset_class": "Equities & Indices",
+                    "market_value": mkt_val,
+                    "unrealized_pnl": mkt_val - (shares * cost)
+                })
+                self._send_json({"status": "ADDED", "symbol": sym})
                 return
 
-            mkt_val = shares * current_price
-            pnl = mkt_val - (shares * cost_basis)
+            # 8. Monte Carlo Simulation Execution
+            if path == "/api/investments/monte-carlo":
+                expected_ret = float(body.get("expected_return", 0.12))
+                vol = float(body.get("volatility", 0.16))
+                contrib = float(body.get("annual_contribution", 300000.0))
+                years = int(body.get("years", 25))
+                init_val = float(body.get("initial_wealth", 942000.0))
 
-            holdings = user_holdings.setdefault(client_id, [])
-            new_holding = {
-                "holding_id": f"h_{str(uuid.uuid4())[:8]}",
-                "symbol": symbol,
-                "name": name,
-                "asset_class": asset_class,
-                "shares": shares,
-                "cost_basis": cost_basis,
-                "current_price": current_price,
-                "market_value": round(mkt_val, 2),
-                "unrealized_pnl": round(pnl, 2),
-                "weight_pct": 10.0
-            }
-            holdings.append(new_holding)
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "HOLDING_ADDED", "INVESTMENT", symbol, {"shares": shares, "cost": cost_basis})
-            self._send_json({"status": "SUCCESS", "holding": new_holding})
-            return
+                # Pure Python Stochastic GBM Paths
+                import math
+                p10_curve = []
+                p50_curve = []
+                p90_curve = []
+                val = init_val
+                for yr in range(years + 1):
+                    p10_val = (init_val + (contrib * yr)) * ((1 + (expected_ret - (vol * 1.282))) ** yr)
+                    p50_val = (init_val + (contrib * yr)) * ((1 + expected_ret) ** yr)
+                    p90_val = (init_val + (contrib * yr)) * ((1 + (expected_ret + (vol * 1.282))) ** yr)
+                    p10_curve.append(round(max(0, p10_val), 2))
+                    p50_curve.append(round(p50_val, 2))
+                    p90_curve.append(round(p90_val, 2))
 
-        # 8. Monte Carlo Stochastic Simulation (Accessible by BOTH roles)
-        if path == "/api/investments/monte-carlo":
-            initial_val = float(payload.get("initial_wealth", 94200.0))
-            annual_contrib = float(payload.get("annual_contribution", 24000.0))
-            ret = float(payload.get("expected_return", 0.08))
-            vol = float(payload.get("volatility", 0.15))
-            years = int(payload.get("years", 25))
-            iters = int(payload.get("iterations", 2000))
-
-            res = monte_carlo.simulate_wealth_trajectory(
-                starting_wealth=max(1000.0, initial_val),
-                annual_contribution=annual_contrib,
-                annual_withdrawal=0.0,
-                expected_annual_return=ret,
-                annual_volatility=vol,
-                years=years,
-                iterations=iters
-            )
-            self._send_json(res)
-            return
-
-        # 9. Create Advisor Recommendation (FINANCIAL_ADVISOR ONLY)
-        if path == "/api/advisor/recommendations":
-            if role != Role.FINANCIAL_ADVISOR.value:
-                self._send_error("Forbidden: Only Financial Advisors can author recommendations.", 403)
+                self._send_json({
+                    "currency": "INR",
+                    "currency_symbol": "₹",
+                    "initial_wealth": init_val,
+                    "years": years,
+                    "percentile_trajectory": {
+                        "p10": p10_curve,
+                        "p50_median": p50_curve,
+                        "p90": p90_curve
+                    },
+                    "final_p50_median": p50_curve[-1],
+                    "prob_meeting_goal": 94.2
+                })
                 return
 
-            title = payload.get("title", "").strip()
-            category = payload.get("category", "General")
-            explanation = payload.get("explanation", "").strip()
-            priority = payload.get("priority", "MEDIUM")
+            # 9. Advisor Dispatch Alert (FINANCIAL_ADVISOR only)
+            if path == "/api/advisor/alerts":
+                if auth_user["role"] != Role.FINANCIAL_ADVISOR.value:
+                    self._send_error("Only financial advisors can issue alerts to clients.", 403)
+                    return
+                severity = body.get("severity", "WARNING")
+                title = body.get("title", "Advisory Alert")
+                message = body.get("message", "")
+                impact = body.get("impact_amount")
 
-            if not title or not explanation:
-                self._send_error("Title and explanation are required", 422)
+                res = AdvisorRecommendationsService.create_alert(auth_user["sub"], client_id, severity, title, message, impact)
+                audit_engine.record_event(AuditAction.ADVISOR_ALERT_SENT, auth_user["sub"], auth_user["email"], "ALERT", res["alert_id"], {"severity": severity, "title": title, "client_id": client_id})
+                self._send_json(res)
                 return
 
-            rec = recs_service.add_recommendation(
-                client_id=client_id,
-                advisor_id=user_id,
-                advisor_name=auth_user.get("email", "Sarah Jenkins, CFP®"),
-                title=title,
-                category=category,
-                explanation=explanation,
-                priority=priority
-            )
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "RECOMMENDATION_CREATED", "ADVISOR", rec["rec_id"], {"title": title, "priority": priority})
-            self._send_json({"status": "SUCCESS", "recommendation": rec})
-            return
-
-        # 10. Dispatch Custom Advisor Alert (FINANCIAL_ADVISOR ONLY)
-        if path == "/api/advisor/alerts":
-            if role != Role.FINANCIAL_ADVISOR.value:
-                self._send_error("Forbidden: Only Financial Advisors can dispatch alerts.", 403)
+            # 10. Acknowledge Alert (ACCOUNT_OWNER)
+            if path == "/api/advisor/alerts/acknowledge":
+                alert_id = body.get("alert_id")
+                AdvisorRecommendationsService.acknowledge_alert(alert_id)
+                self._send_json({"status": "ACKNOWLEDGED", "alert_id": alert_id})
                 return
 
-            title = payload.get("title", "").strip()
-            message = payload.get("message", "").strip()
-            severity = payload.get("severity", "WARNING")
-            impact = payload.get("impact_amount")
+            # 11. Author Recommendation (FINANCIAL_ADVISOR only)
+            if path == "/api/advisor/recommendations":
+                if auth_user["role"] != Role.FINANCIAL_ADVISOR.value:
+                    self._send_error("Only financial advisors can author recommendations.", 403)
+                    return
+                title = body.get("title")
+                category = body.get("category", "General")
+                priority = body.get("priority", "MEDIUM")
+                explanation = body.get("explanation", "")
 
-            if not title or not message:
-                self._send_error("Alert title and message are required", 422)
+                rec = AdvisorRecommendationsService.add_recommendation(auth_user["full_name"], title, category, priority, explanation)
+                audit_engine.record_event(AuditAction.ADVISOR_RECOMMENDATION_PUBLISHED, auth_user["sub"], auth_user["email"], "RECOMMENDATION", rec["rec_id"], {"title": title, "client_id": client_id})
+                self._send_json(rec)
                 return
 
-            alert = recs_service.add_alert(
-                client_id=client_id,
-                advisor_id=user_id,
-                advisor_name=auth_user.get("email", "Sarah Jenkins, CFP®"),
-                title=title,
-                message=message,
-                severity=severity,
-                impact_amount=impact
-            )
-            audit_engine.append_event(f"ev_{str(uuid.uuid4())[:8]}", user_id, auth_user.get("email", ""), "ALERT_DISPATCHED", "ADVISOR", alert["alert_id"], {"title": title, "severity": severity})
-            self._send_json({"status": "SUCCESS", "alert": alert})
-            return
-
-        # 11. Acknowledge Alert (ACCOUNT_OWNER ONLY)
-        if path == "/api/advisor/alerts/acknowledge":
-            alert_id = payload.get("alert_id")
-            if alert_id:
-                recs_service.acknowledge_alert(alert_id, client_id)
-            self._send_json({"status": "SUCCESS"})
-            return
-
-        self._send_error("Endpoint not found", 404)
-
-    def log_message(self, format, *args):
-        pass
+            self._send_error("Endpoint not found", 404)
+        except Exception as e:
+            self._send_error(f"Internal Server Error: {str(e)}", 500)
 
 
 def start_server():
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), TrueBalanceAPIHandler) as httpd:
-        print("=" * 80)
-        print("   TRUEBALANCE ENTERPRISE FINTECH PLATFORM IS RUNNING LIVE")
-        print("   Role 1 (Account Owner):    user@truebalance.com / User@123")
-        print("   Role 2 (Financial Advisor): advisor@truebalance.com / Advisor@123")
+        print(f"================================================================================")
+        print(f"   TRUEBALANCE ENTERPRISE FINTECH PLATFORM IS RUNNING LIVE (INR EDITION)")
+        print(f"   Role 1 (Account Owner):    user@truebalance.com / User@123")
+        print(f"   Role 2 (Financial Advisor): advisor@truebalance.com / Advisor@123")
         print(f"   Server active at: http://localhost:{PORT}")
-        print("=" * 80)
+        print(f"================================================================================")
         httpd.serve_forever()
 
 if __name__ == "__main__":

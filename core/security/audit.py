@@ -42,6 +42,15 @@ class AuditRecord:
         return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
 
 
+class AuditAction:
+    LOGIN_SUCCESS = "LOGIN_SUCCESS"
+    ACCOUNT_CREATED = "ACCOUNT_CREATED"
+    TRANSACTION_POSTED = "TRANSACTION_POSTED"
+    BUDGET_MODIFIED = "BUDGET_MODIFIED"
+    ADVISOR_ALERT_SENT = "ADVISOR_ALERT_SENT"
+    ADVISOR_RECOMMENDATION_PUBLISHED = "ADVISOR_RECOMMENDATION_PUBLISHED"
+
+
 class AuditLedgerEngine:
     """
     Maintains and validates the integrity of the system audit chain.
@@ -52,6 +61,18 @@ class AuditLedgerEngine:
     def __init__(self):
         self._chain: List[AuditRecord] = []
         self._sequence_counter: int = 0
+
+    def record_event(
+        self,
+        action: str,
+        actor_id: str,
+        actor_email: str,
+        entity_type: str,
+        entity_id: str,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> AuditRecord:
+        record_id = f"aud_{len(self._chain)+1:04d}"
+        return self.append_event(record_id, actor_id, actor_email, str(action), entity_type, entity_id, metadata)
 
     def append_event(
         self,

@@ -4,6 +4,7 @@ Assigns every dollar a job, enforces category limits, and tracks monthly rollove
 """
 
 from typing import Dict, List, Optional, Tuple
+import time
 from core.database.models import BudgetEnvelopeEntity, generate_uuid
 from core.math.decimal_utils import FinancialDecimal
 
@@ -36,6 +37,16 @@ class BudgetManager:
         )
         self._envelopes[key] = env
         return env
+
+    def set_envelope(self, user_id: str, category_id: str, allocated: FinancialDecimal, period_month: Optional[str] = None):
+        if not period_month:
+            period_month = time.strftime("%Y-%m")
+        key = f"{user_id}:{category_id}:{period_month}"
+        alloc_cents = allocated.to_cents() if hasattr(allocated, 'to_cents') else int(float(str(allocated)) * 100)
+        if key in self._envelopes:
+            self._envelopes[key].allocated_cents = alloc_cents
+        else:
+            self.create_envelope(user_id, category_id, alloc_cents, period_month)
 
     def record_expense(self, user_id: str, category_id: str, period_month: str, amount_cents: int):
         key = f"{user_id}:{category_id}:{period_month}"
